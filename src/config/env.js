@@ -10,6 +10,7 @@ const schema = {
   type: "object",
   properties: {
     PORT: { type: "string", default: "3000" },
+    HOST: { type: "string", default: "0.0.0.0" },
     DB_HOST: { type: "string" },
     DB_USER: { type: "string" },
     DB_PASS: { type: "string" },
@@ -35,6 +36,6 @@ export default fp(async (fastify) => {
       "❌ Error en la validación de variables de entorno:",
       err.message
     );
-    process.exit(1); // Detener la aplicación si hay errores en el .env
+    process.exit(1);
   }
 });
