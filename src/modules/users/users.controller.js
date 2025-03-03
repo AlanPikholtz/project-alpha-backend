@@ -3,19 +3,23 @@ import { loginUser, registerUser } from "./users.service.js";
 export async function registerHandler(req, reply) {
   try {
     req.log.info(`📝 New user registration attempt: ${req.body.email}`);
-    const user = await registerUser(
+
+    const userId = await registerUser(
       req.server,
       req.body.email,
       req.body.password
     );
+
     req.log.info(
-      `✅ User registered successfully: ID ${user.id}, Email: ${user.email}`
+      `✅ User registered successfully: ID ${userId}, Email: ${req.body.email}`
     );
-    return reply.status(201).send(user);
+
+    return reply.status(201).send(userId);
   } catch (err) {
     req.log.error(
       `❌ Registration failed for email: ${req.body.email} - ${err.message}`
     );
+
     throw err;
   }
 }
@@ -37,6 +41,7 @@ export async function loginHandler(req, reply) {
     req.log.warn(
       `⚠️ Failed login attempt for email: ${req.body.email} - ${err.message}`
     );
+
     throw err;
   }
 }

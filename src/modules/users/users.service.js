@@ -15,7 +15,8 @@ export async function registerUser(fastify, email, password) {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  return await createUser(fastify, email, hashedPassword);
+  const userId = await createUser(fastify, email, hashedPassword);
+  return userId;
 }
 
 export async function loginUser(fastify, email, password) {
