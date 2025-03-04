@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
 import { ERROR_TYPES } from "../../constants/errorTypes.js";
-import { createUser, getUserByEmail } from "./users.repository.js";
+import { fetchUserByEmail, insertUser } from "./users.repository.js";
 
 export async function registerUser(fastify, email, password) {
-  const existingUser = await getUserByEmail(fastify, email);
+  const existingUser = await fetchUserByEmail(fastify, email);
   if (existingUser) {
     throw {
       isCustom: true,
@@ -15,12 +15,12 @@ export async function registerUser(fastify, email, password) {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const userId = await createUser(fastify, email, hashedPassword);
-  return userId;
+  const result = await insertUser(fastify, email, hashedPassword);
+  return { id: result.insertId };
 }
 
 export async function loginUser(fastify, email, password) {
-  const user = await getUserByEmail(fastify, email);
+  const user = await fetchUserByEmail(fastify, email);
   if (!user)
     throw {
       isCustom: true,
