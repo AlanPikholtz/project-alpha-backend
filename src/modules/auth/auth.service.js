@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { ERROR_TYPES } from "../../constants/errorTypes.js";
-import { fetchUserByEmail, insertUser } from "./users.repository.js";
+import { fetchUserByEmail, insertUser } from "./auth.repository.js";
 
 export async function registerUser(fastify, email, password) {
   const existingUser = await fetchUserByEmail(fastify, email);
