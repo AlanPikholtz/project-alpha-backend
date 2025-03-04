@@ -1,5 +1,6 @@
 import jwt from "@fastify/jwt";
 import fp from "fastify-plugin";
+import { ERROR_TYPES } from "../constants/errorTypes.js";
 
 export default fp(async (fastify) => {
   fastify.register(jwt, {

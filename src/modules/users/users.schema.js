@@ -35,8 +35,6 @@ export const registerSchema = {
       type: "object",
       properties: {
         id: { type: "integer" },
-        email: { type: "string" },
-        created_at: { type: "string", format: "date-time" },
       },
     },
   },
