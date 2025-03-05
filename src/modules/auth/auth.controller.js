@@ -1,4 +1,4 @@
-import { loginUser, registerUser } from "./users.service.js";
+import { loginUser, refreshTokens, registerUser } from "./auth.service.js";
 
 export async function registerHandler(req, reply) {
   try {
@@ -28,7 +28,7 @@ export async function loginHandler(req, reply) {
   try {
     req.log.info(`🔑 Login attempt for email: ${req.body.email}`);
 
-    const token = await loginUser(
+    const tokens = await loginUser(
       req.server,
       req.body.email,
       req.body.password
@@ -36,11 +36,30 @@ export async function loginHandler(req, reply) {
 
     req.log.info(`✅ Login successful for email: ${req.body.email}`);
 
-    return reply.send(token);
+    return reply.send(tokens);
   } catch (err) {
     req.log.warn(
       `⚠️ Failed login attempt for email: ${req.body.email} - ${err.message}`
     );
+
+    throw err;
+  }
+}
+
+export async function refreshHandler(req, reply) {
+  try {
+    const authHeader = req.headers.authorization;
+    const refreshToken = authHeader.split(" ")[1];
+
+    req.log.info(`🔑 Refresh tokens attempt with token: ${refreshToken}`);
+
+    const tokens = await refreshTokens(req.server, refreshToken);
+
+    req.log.info(`✅ Token refresh successful for token: ${refreshToken}`);
+
+    return reply.send(tokens);
+  } catch (err) {
+    req.log.warn(`⚠️ Failed refresh token attempt - ${err.message}`);
 
     throw err;
   }

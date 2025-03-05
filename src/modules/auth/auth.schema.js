@@ -42,7 +42,7 @@ export const registerSchema = {
 
 export const loginSchema = {
   description:
-    "Authenticate a user and return a JWT token for session management.",
+    "Authenticate a user and return JWT tokens for session management.",
   summary: "User login",
   tags: ["Auth"],
   body: {
@@ -72,7 +72,23 @@ export const loginSchema = {
     200: {
       type: "object",
       properties: {
-        token: { type: "string" },
+        accessToken: { type: "string" },
+        refreshToken: { type: "string" },
+      },
+    },
+  },
+};
+
+export const refreshSchema = {
+  description: "Generates and return new JWT tokens for session management.",
+  summary: "Refresh token",
+  tags: ["Auth"],
+  response: {
+    200: {
+      type: "object",
+      properties: {
+        accessToken: { type: "string" },
+        refreshToken: { type: "string" },
       },
     },
   },
