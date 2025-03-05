@@ -17,10 +17,14 @@ export default async function clientRoutes(fastify) {
     getAllClientsHandler
   );
 
-  fastify.get("/clients/:id", {
-    schema: getClientSchema,
-    handler: getClientHandler,
-  });
+  fastify.get(
+    "/clients/:id",
+    {
+      schema: getClientSchema,
+      preValidation: [fastify.authenticate],
+    },
+    getClientHandler
+  );
 
   fastify.post(
     "/clients",
