@@ -21,7 +21,7 @@ export const createTransactionSchema = {
         description: "Transaction type",
         errorMessage: {
           type: "Transaction type must be a string.",
-          enum: "Transaction type must be deposit | payment",
+          enum: "Transaction type must be [deposit] | [payment]",
         },
       },
       amount: {
