@@ -5,8 +5,7 @@ import {
 
 export async function createTransactionHandler(req, reply) {
   try {
-    const { clientId } = req.params;
-    const { type, amount } = req.body;
+    const { clientId, type, amount } = req.body;
 
     req.log.info(
       `📥 Creating transaction for client ${clientId}: ${type} $${amount}`
@@ -34,9 +33,9 @@ export async function getClientTransactionsHandler(req, reply) {
 
     req.log.info(`📥 Fetching transactions for client ${clientId}`);
 
-    console.time(`⏱️ GET /transactions/${clientId} execution time`);
+    console.time(`⏱️ GET /transactions/client/${clientId} execution time`);
     const transactions = await getClientTransactions(req.server, clientId);
-    console.timeEnd(`⏱️ GET /transactions/${clientId} execution time`);
+    console.timeEnd(`⏱️ GET /transactions/client/${clientId} execution time`);
 
     req.log.info(`✅ Retrieved ${transactions.length} transactions`);
 

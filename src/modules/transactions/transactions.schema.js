@@ -1,20 +1,20 @@
 export const createTransactionSchema = {
   description: "Create a deposit or payment for a client",
   tags: ["Transactions"],
-  params: {
+
+  body: {
     type: "object",
+    required: ["clientId", "type", "amount"],
     properties: {
       clientId: {
         type: "integer",
         minimum: 1,
         description: "Client ID",
+        errorMessage: {
+          type: "Client id must be an integer.",
+          minimum: "Client id must be >= 1",
+        },
       },
-    },
-  },
-  body: {
-    type: "object",
-    required: ["type", "amount"],
-    properties: {
       type: {
         type: "string",
         enum: ["deposit", "payment"],
@@ -36,6 +36,7 @@ export const createTransactionSchema = {
     },
     errorMessage: {
       required: {
+        clientId: "Client id is required.",
         type: "Type is required.",
         amount: "Amount is required.",
       },

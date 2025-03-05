@@ -10,7 +10,7 @@ import {
 
 export default async function transactionRoutes(fastify) {
   fastify.post(
-    "/transactions/client/:clientId",
+    "/transactions",
     {
       schema: createTransactionSchema,
       preValidation: [fastify.authenticate],
