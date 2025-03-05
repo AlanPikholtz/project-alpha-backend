@@ -25,8 +25,8 @@ export const getAllClientsSchema = {
         properties: {
           id: { type: "integer" },
           name: { type: "string" },
-          created_at: { type: "string", format: "date-time" },
-          updated_at: { type: "string", format: "date-time" },
+          createdAt: { type: "string", format: "date-time" },
+          updatedAt: { type: "string", format: "date-time" },
         },
       },
     },
@@ -86,8 +86,8 @@ export const getClientSchema = {
       properties: {
         id: { type: "integer" },
         name: { type: "string" },
-        created_at: { type: "string", format: "date-time" },
-        updated_at: { type: "string", format: "date-time" },
+        createdAt: { type: "string", format: "date-time" },
+        updatedAt: { type: "string", format: "date-time" },
       },
     },
   },

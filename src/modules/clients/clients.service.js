@@ -7,7 +7,12 @@ import {
 
 export async function getAllClients(fastify, limit, offset) {
   const clients = await fetchClients(fastify, limit, offset);
-  return clients;
+  return clients.map((c) => ({
+    id: c.id,
+    name: c.name,
+    createdAt: c.created_at,
+    updatedAt: c.updated_at,
+  }));
 }
 
 export async function getClientById(fastify, id) {
@@ -21,7 +26,12 @@ export async function getClientById(fastify, id) {
       message: `No client found with id ${id}.`,
     };
 
-  return client;
+  return {
+    id: client.id,
+    name: client.name,
+    createdAt: client.created_at,
+    updatedAt: client.updated_at,
+  };
 }
 
 export async function createClient(fastify, name) {
