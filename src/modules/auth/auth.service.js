@@ -1,6 +1,10 @@
 import bcrypt from "bcrypt";
 import { ERROR_TYPES } from "../../constants/errorTypes.js";
-import { fetchUserByEmail, insertUser } from "./auth.repository.js";
+import {
+  fetchUserByEmail,
+  fetchUserById,
+  insertUser,
+} from "./auth.repository.js";
 
 export async function registerUser(fastify, email, password) {
   const existingUser = await fetchUserByEmail(fastify, email);
@@ -38,5 +42,41 @@ export async function loginUser(fastify, email, password) {
       message: "Incorrect credentials.",
     };
 
-  return { token: fastify.jwt.sign({ id: user.id, email: user.email }) };
+  const accessToken = fastify.jwt.sign(
+    { id: user.id, email: user.email },
+    { expiresIn: "3h" }
+  );
+
+  const refreshToken = fastify.jwt.sign({ id: user.id }, { expiresIn: "7d" });
+
+  return { accessToken, refreshToken };
+}
+
+export async function refreshTokens(fastify, token) {
+  const decoded = fastify.jwt.verify(token);
+  if (!decoded.id)
+    throw {
+      isCustom: true,
+      statusCode: 401,
+      errorType: ERROR_TYPES.UNAUTHORIZED,
+      message: "Invalid refresh token",
+    };
+
+  const user = await fetchUserById(fastify, decoded.id);
+  if (!user)
+    throw {
+      isCustom: true,
+      statusCode: 404,
+      errorType: ERROR_TYPES.NOT_FOUND,
+      message: "No user found with this id.",
+    };
+
+  const accessToken = fastify.jwt.sign(
+    { id: user.id, email: user.email },
+    { expiresIn: "3h" }
+  );
+
+  const refreshToken = fastify.jwt.sign({ id: user.id }, { expiresIn: "7d" });
+
+  return { accessToken, refreshToken };
 }
