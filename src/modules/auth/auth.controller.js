@@ -48,14 +48,15 @@ export async function loginHandler(req, reply) {
 
 export async function refreshHandler(req, reply) {
   try {
-    const authHeader = req.headers.authorization;
-    const refreshToken = authHeader.split(" ")[1];
+    req.log.info(
+      `🔑 Refresh tokens attempt with token: ${req.body.refreshToken}`
+    );
 
-    req.log.info(`🔑 Refresh tokens attempt with token: ${refreshToken}`);
+    const tokens = await refreshTokens(req.server, req.body.refreshToken);
 
-    const tokens = await refreshTokens(req.server, refreshToken);
-
-    req.log.info(`✅ Token refresh successful for token: ${refreshToken}`);
+    req.log.info(
+      `✅ Token refresh successful for token: ${req.body.refreshToken}`
+    );
 
     return reply.send(tokens);
   } catch (err) {
