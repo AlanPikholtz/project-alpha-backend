@@ -44,7 +44,7 @@ export async function loginUser(fastify, email, password) {
 
   const accessToken = fastify.jwt.sign(
     { id: user.id, email: user.email },
-    { expiresIn: "3h" }
+    { expiresIn: "2m" }
   );
 
   const refreshToken = fastify.jwt.sign({ id: user.id }, { expiresIn: "7d" });
@@ -73,7 +73,7 @@ export async function refreshTokens(fastify, token) {
 
   const accessToken = fastify.jwt.sign(
     { id: user.id, email: user.email },
-    { expiresIn: "3h" }
+    { expiresIn: "2m" }
   );
 
   const refreshToken = fastify.jwt.sign({ id: user.id }, { expiresIn: "7d" });

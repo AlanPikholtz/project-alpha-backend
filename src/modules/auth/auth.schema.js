@@ -83,6 +83,23 @@ export const refreshSchema = {
   description: "Generates and return new JWT tokens for session management.",
   summary: "Refresh token",
   tags: ["Auth"],
+  body: {
+    type: "object",
+    required: ["refreshToken"],
+    properties: {
+      refreshToken: {
+        type: "string",
+        errorMessage: {
+          type: "Refresh token must be a string.",
+        },
+      },
+    },
+    errorMessage: {
+      required: {
+        refreshToken: "Refresh token is required.",
+      },
+    },
+  },
   response: {
     200: {
       type: "object",
