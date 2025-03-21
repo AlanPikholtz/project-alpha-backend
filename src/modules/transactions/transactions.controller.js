@@ -5,15 +5,16 @@ import {
 
 export async function createTransactionHandler(req, reply) {
   try {
-    const { clientId, type, amount } = req.body;
+    const { clientId, accountId, type, amount } = req.body;
 
     req.log.info(
-      `📥 Creating transaction for client ${clientId}: ${type} $${amount}`
+      `📥 Creating transaction for client ${clientId}: account ${accountId} - ${type} $${amount}`
     );
 
     const transactionId = await createTransaction(
       req.server,
       clientId,
+      accountId,
       type,
       amount
     );

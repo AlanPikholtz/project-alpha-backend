@@ -4,7 +4,7 @@ export const createTransactionSchema = {
 
   body: {
     type: "object",
-    required: ["clientId", "type", "amount"],
+    required: ["clientId", "accountId", "type", "amount"],
     properties: {
       clientId: {
         type: "integer",
@@ -13,6 +13,15 @@ export const createTransactionSchema = {
         errorMessage: {
           type: "Client id must be an integer.",
           minimum: "Client id must be >= 1",
+        },
+      },
+      accountId: {
+        type: "integer",
+        minimum: 1,
+        description: "Account ID",
+        errorMessage: {
+          type: "Account id must be an integer.",
+          minimum: "Account id must be >= 1",
         },
       },
       type: {
@@ -37,6 +46,7 @@ export const createTransactionSchema = {
     errorMessage: {
       required: {
         clientId: "Client id is required.",
+        accountId: "Account id is required.",
         type: "Type is required.",
         amount: "Amount is required.",
       },
@@ -75,6 +85,7 @@ export const getClientTransactionsSchema = {
         properties: {
           id: { type: "integer" },
           clientId: { type: "integer" },
+          accountId: { type: "integer" },
           type: { type: "string" },
           amount: { type: "number" },
           createdAt: { type: "string", format: "date-time" },
