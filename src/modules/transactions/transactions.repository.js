@@ -1,7 +1,13 @@
-export async function insertTransaction(fastify, clientId, type, amount) {
+export async function insertTransaction(
+  fastify,
+  clientId,
+  accountId,
+  type,
+  amount
+) {
   const [result] = await fastify.mysql.query(
-    "INSERT INTO transactions (client_id, type, amount) VALUES (?, ?, ?)",
-    [clientId, type, amount]
+    "INSERT INTO transactions (client_id, account_id, type, amount) VALUES (?, ?, ?, ?)",
+    [clientId, accountId, type, amount]
   );
   return result;
 }
