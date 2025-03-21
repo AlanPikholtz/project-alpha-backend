@@ -3,6 +3,7 @@ import Fastify from "fastify";
 import db from "./config/db.js";
 import env from "./config/env.js";
 import errorHandler from "./middlewares/errorHandler.js";
+import accountRoutes from "./modules/accounts/accounts.routes.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import clientRoutes from "./modules/clients/clients.routes.js";
 import transactionRoutes from "./modules/transactions/transactions.routes.js";
@@ -44,5 +45,6 @@ await fastify.register(rateLimitPlugin);
 await fastify.register(authRoutes);
 await fastify.register(clientRoutes);
 await fastify.register(transactionRoutes);
+await fastify.register(accountRoutes);
 
 export default fastify;
