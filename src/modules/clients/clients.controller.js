@@ -2,6 +2,7 @@ import {
   createClient,
   getAllClients,
   getClientById,
+  updateClient,
 } from "./clients.service.js";
 
 export async function getAllClientsHandler(req, reply) {
@@ -47,15 +48,52 @@ export async function getClientHandler(req, reply) {
 
 export async function createClientHandler(req, reply) {
   try {
-    const { name } = req.body;
+    const { firstName, lastName, code, balance, commission } = req.body;
 
-    req.log.info(`📥 Creating client: ${name}`);
+    req.log.info(
+      `📥 Creating client: ${firstName} ${lastName} - code: ${code}`
+    );
 
-    const clientId = await createClient(req.server, name);
+    const clientId = await createClient(
+      req.server,
+      firstName,
+      lastName,
+      code,
+      balance,
+      commission,
+      req.userId
+    );
 
     req.log.info(`✅ Client created with ID: ${clientId}`);
 
     return reply.status(201).send(clientId);
+  } catch (error) {
+    req.log.error(`❌ Error creating client: ${error.message}`);
+    throw error;
+  }
+}
+
+export async function updateClientHandler(req, reply) {
+  try {
+    const { id } = req.params;
+
+    const { firstName, lastName, balance, commission } = req.body;
+
+    req.log.info(`📥 Updating client ${id}`);
+
+    await updateClient(
+      req.server,
+      id,
+      firstName,
+      lastName,
+      balance,
+      commission,
+      req.userId
+    );
+
+    req.log.info(`✅ Client updated successfully - Client id: ${id}`);
+
+    return reply.status(204).send();
   } catch (error) {
     req.log.error(`❌ Error creating client: ${error.message}`);
     throw error;
