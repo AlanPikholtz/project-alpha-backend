@@ -213,12 +213,8 @@ export const updateClientSchema = {
     },
   },
   response: {
-    201: {
+    204: {
       description: "Client updated successfully",
-      type: "object",
-      properties: {
-        id: { type: "integer" },
-      },
     },
   },
 };
