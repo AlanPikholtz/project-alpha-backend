@@ -19,4 +19,19 @@ export default fp(async (fastify) => {
       };
     }
   });
+
+  fastify.decorateRequest("userId", null);
+
+  fastify.addHook("onRequest", async (request, reply) => {
+    const authHeader = request.headers.authorization;
+
+    if (authHeader?.startsWith("Bearer ")) {
+      try {
+        const decoded = await request.jwtVerify();
+        request.userId = decoded.id || null;
+      } catch (err) {
+        request.userId = null;
+      }
+    }
+  });
 });
