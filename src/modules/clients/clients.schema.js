@@ -24,9 +24,14 @@ export const getAllClientsSchema = {
         type: "object",
         properties: {
           id: { type: "integer" },
-          name: { type: "string" },
+          firstName: { type: "string" },
+          lastName: { type: "string" },
+          code: { type: "string" },
+          balance: { type: "number" },
+          commission: { type: "number" },
           createdAt: { type: "string", format: "date-time" },
           updatedAt: { type: "string", format: "date-time" },
+          updatedBy: { type: "integer" },
         },
       },
     },
@@ -38,23 +43,67 @@ export const createClientSchema = {
   tags: ["Clients"],
   body: {
     type: "object",
-    required: ["name"],
+    required: ["firstName", "lastName", "code"],
     properties: {
-      name: {
+      firstName: {
         type: "string",
         minLength: 3,
         maxLength: 100,
-        description: "Client's name",
+        description: "First name",
         errorMessage: {
-          type: "Client name must be a string.",
-          minLength: "Client name must be at least 3 characters long.",
-          maxLength: "Client name cannot exceed 100 characters.",
+          type: "First name must be a string.",
+          minLength: "First name must be at least 3 characters long.",
+          maxLength: "First name cannot exceed 100 characters.",
+        },
+      },
+      lastName: {
+        type: "string",
+        minLength: 3,
+        maxLength: 100,
+        description: "Last name",
+        errorMessage: {
+          type: "Last name must be a string.",
+          minLength: "Last name must be at least 3 characters long.",
+          maxLength: "Last name cannot exceed 100 characters.",
+        },
+      },
+      code: {
+        type: "string",
+        minLength: 3,
+        maxLength: 50,
+        description: "Code",
+        errorMessage: {
+          type: "Code must be a string.",
+          minLength: "Code must be at least 3 characters long.",
+          maxLength: "Code cannot exceed 50 characters.",
+        },
+      },
+      balance: {
+        type: "number",
+        minimum: 0,
+        default: 0.0,
+        description: "Balance",
+        errorMessage: {
+          type: "Balance must be a number.",
+          minimum: "Balance must be >= 0.",
+        },
+      },
+      commission: {
+        type: "number",
+        minimum: 0,
+        default: 0.0,
+        description: "Commission",
+        errorMessage: {
+          type: "Commission must be a number.",
+          minimum: "Commission must be >= 0.",
         },
       },
     },
     errorMessage: {
       required: {
-        name: "Client name is required.",
+        firstName: "First name is required.",
+        lastName: "Last name is required.",
+        code: "Code is required.",
       },
     },
   },
@@ -85,10 +134,87 @@ export const getClientSchema = {
       type: "object",
       properties: {
         id: { type: "integer" },
-        name: { type: "string" },
+        firstName: { type: "string" },
+        lastName: { type: "string" },
+        code: { type: "string" },
+        balance: { type: "number" },
+        commission: { type: "number" },
         createdAt: { type: "string", format: "date-time" },
         updatedAt: { type: "string", format: "date-time" },
+        updatedBy: { type: "integer" },
       },
+    },
+  },
+};
+
+export const updateClientSchema = {
+  description: "Update a client",
+  tags: ["Clients"],
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "integer", minimum: 1, description: "Client ID" },
+    },
+  },
+  body: {
+    type: "object",
+    required: ["firstName", "lastName"],
+    properties: {
+      firstName: {
+        type: "string",
+        minLength: 3,
+        maxLength: 100,
+        description: "First name",
+        errorMessage: {
+          type: "First name must be a string.",
+          minLength: "First name must be at least 3 characters long.",
+          maxLength: "First name cannot exceed 100 characters.",
+        },
+      },
+      lastName: {
+        type: "string",
+        minLength: 3,
+        maxLength: 100,
+        description: "Last name",
+        errorMessage: {
+          type: "Last name must be a string.",
+          minLength: "Last name must be at least 3 characters long.",
+          maxLength: "Last name cannot exceed 100 characters.",
+        },
+      },
+      balance: {
+        type: "number",
+        minimum: 0,
+        default: 0.0,
+        description: "Balance",
+        errorMessage: {
+          type: "Balance must be a number.",
+          minimum: "Balance must be >= 0.",
+        },
+      },
+      commission: {
+        type: "number",
+        minimum: 0,
+        default: 0.0,
+        description: "Commission",
+        errorMessage: {
+          type: "Commission must be a number.",
+          minimum: "Commission must be >= 0.",
+        },
+      },
+    },
+    errorMessage: {
+      required: {
+        firstName: "First name is required.",
+        lastName: "Last name is required.",
+        code: "Code is required.",
+      },
+    },
+  },
+  response: {
+    204: {
+      description: "Client updated successfully",
     },
   },
 };
