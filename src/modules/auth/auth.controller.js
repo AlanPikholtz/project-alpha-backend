@@ -2,22 +2,22 @@ import { loginUser, refreshTokens, registerUser } from "./auth.service.js";
 
 export async function registerHandler(req, reply) {
   try {
-    req.log.info(`📝 New user registration attempt: ${req.body.email}`);
+    req.log.info(`📝 New user registration attempt: ${req.body.username}`);
 
     const userId = await registerUser(
       req.server,
-      req.body.email,
+      req.body.username,
       req.body.password
     );
 
     req.log.info(
-      `✅ User registered successfully: ID ${userId}, Email: ${req.body.email}`
+      `✅ User registered successfully: ID ${userId}, Username: ${req.body.username}`
     );
 
     return reply.status(201).send(userId);
   } catch (err) {
     req.log.error(
-      `❌ Registration failed for email: ${req.body.email} - ${err.message}`
+      `❌ Registration failed for username: ${req.body.username} - ${err.message}`
     );
 
     throw err;
@@ -26,20 +26,20 @@ export async function registerHandler(req, reply) {
 
 export async function loginHandler(req, reply) {
   try {
-    req.log.info(`🔑 Login attempt for email: ${req.body.email}`);
+    req.log.info(`🔑 Login attempt for username: ${req.body.username}`);
 
     const tokens = await loginUser(
       req.server,
-      req.body.email,
+      req.body.username,
       req.body.password
     );
 
-    req.log.info(`✅ Login successful for email: ${req.body.email}`);
+    req.log.info(`✅ Login successful for username: ${req.body.username}`);
 
     return reply.send(tokens);
   } catch (err) {
     req.log.warn(
-      `⚠️ Failed login attempt for email: ${req.body.email} - ${err.message}`
+      `⚠️ Failed login attempt for username: ${req.body.username} - ${err.message}`
     );
 
     throw err;

@@ -4,14 +4,12 @@ export const registerSchema = {
   tags: ["Auth"],
   body: {
     type: "object",
-    required: ["email", "password"],
+    required: ["username", "password"],
     properties: {
-      email: {
+      username: {
         type: "string",
-        format: "email",
         errorMessage: {
-          type: "Email must be a string.",
-          format: "Invalid email format.",
+          type: "Username must be a string.",
         },
       },
       password: {
@@ -25,7 +23,7 @@ export const registerSchema = {
     },
     errorMessage: {
       required: {
-        email: "Email is required.",
+        username: "Username is required.",
         password: "Password is required.",
       },
     },
@@ -47,14 +45,12 @@ export const loginSchema = {
   tags: ["Auth"],
   body: {
     type: "object",
-    required: ["email", "password"],
+    required: ["username", "password"],
     properties: {
-      email: {
+      username: {
         type: "string",
-        format: "email",
         errorMessage: {
-          type: "Email must be a string.",
-          format: "Invalid email format.",
+          type: "Username must be a string.",
         },
       },
       password: {
@@ -63,7 +59,7 @@ export const loginSchema = {
     },
     errorMessage: {
       required: {
-        email: "Email is required.",
+        username: "Username is required.",
         password: "Password is required.",
       },
     },
