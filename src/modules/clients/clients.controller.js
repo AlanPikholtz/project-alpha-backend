@@ -48,7 +48,8 @@ export async function getClientHandler(req, reply) {
 
 export async function createClientHandler(req, reply) {
   try {
-    const { firstName, lastName, code, balance, commission } = req.body;
+    const { firstName, lastName, code, balance, commission, notes, accountId } =
+      req.body;
 
     req.log.info(
       `📥 Creating client: ${firstName} ${lastName} - code: ${code}`
@@ -60,8 +61,9 @@ export async function createClientHandler(req, reply) {
       lastName,
       code,
       balance,
-      commission,
-      req.userId
+      commission ?? null,
+      notes ?? null,
+      accountId
     );
 
     req.log.info(`✅ Client created with ID: ${clientId}`);
@@ -77,7 +79,7 @@ export async function updateClientHandler(req, reply) {
   try {
     const { id } = req.params;
 
-    const { firstName, lastName, balance, commission } = req.body;
+    const { firstName, lastName, commission, notes, accountId } = req.body;
 
     req.log.info(`📥 Updating client ${id}`);
 
@@ -86,9 +88,9 @@ export async function updateClientHandler(req, reply) {
       id,
       firstName,
       lastName,
-      balance,
       commission,
-      req.userId
+      notes,
+      accountId
     );
 
     req.log.info(`✅ Client updated successfully - Client id: ${id}`);

@@ -29,9 +29,10 @@ export const getAllClientsSchema = {
           code: { type: "string" },
           balance: { type: "number" },
           commission: { type: "number" },
+          notes: { type: "string" },
+          accountId: { type: "integer" },
           createdAt: { type: "string", format: "date-time" },
           updatedAt: { type: "string", format: "date-time" },
-          updatedBy: { type: "integer" },
         },
       },
     },
@@ -43,7 +44,7 @@ export const createClientSchema = {
   tags: ["Clients"],
   body: {
     type: "object",
-    required: ["firstName", "lastName", "code"],
+    required: ["firstName", "lastName", "code", "accountId"],
     properties: {
       firstName: {
         type: "string",
@@ -80,12 +81,10 @@ export const createClientSchema = {
       },
       balance: {
         type: "number",
-        minimum: 0,
         default: 0.0,
         description: "Balance",
         errorMessage: {
           type: "Balance must be a number.",
-          minimum: "Balance must be >= 0.",
         },
       },
       commission: {
@@ -98,12 +97,27 @@ export const createClientSchema = {
           minimum: "Commission must be >= 0.",
         },
       },
+      notes: {
+        type: "string",
+        description: "Notes",
+        errorMessage: {
+          type: "Notes must be a string.",
+        },
+      },
+      accountId: {
+        type: "integer",
+        description: "Account ID",
+        errorMessage: {
+          type: "Account ID must be an integer.",
+        },
+      },
     },
     errorMessage: {
       required: {
         firstName: "First name is required.",
         lastName: "Last name is required.",
         code: "Code is required.",
+        accountId: "AccountId is required.",
       },
     },
   },
@@ -139,9 +153,10 @@ export const getClientSchema = {
         code: { type: "string" },
         balance: { type: "number" },
         commission: { type: "number" },
+        notes: { type: "string" },
+        accountId: { type: "integer" },
         createdAt: { type: "string", format: "date-time" },
         updatedAt: { type: "string", format: "date-time" },
-        updatedBy: { type: "integer" },
       },
     },
   },
@@ -159,7 +174,7 @@ export const updateClientSchema = {
   },
   body: {
     type: "object",
-    required: ["firstName", "lastName"],
+    required: ["firstName", "lastName", "commission", "notes", "accountId"],
     properties: {
       firstName: {
         type: "string",
@@ -183,16 +198,6 @@ export const updateClientSchema = {
           maxLength: "Last name cannot exceed 100 characters.",
         },
       },
-      balance: {
-        type: "number",
-        minimum: 0,
-        default: 0.0,
-        description: "Balance",
-        errorMessage: {
-          type: "Balance must be a number.",
-          minimum: "Balance must be >= 0.",
-        },
-      },
       commission: {
         type: "number",
         minimum: 0,
@@ -203,12 +208,28 @@ export const updateClientSchema = {
           minimum: "Commission must be >= 0.",
         },
       },
+      notes: {
+        type: "string",
+        description: "Notes",
+        errorMessage: {
+          type: "Notes must be a string.",
+        },
+      },
+      accountId: {
+        type: "integer",
+        description: "Account ID",
+        errorMessage: {
+          type: "Account ID must be an integer.",
+        },
+      },
     },
     errorMessage: {
       required: {
         firstName: "First name is required.",
         lastName: "Last name is required.",
-        code: "Code is required.",
+        commission: "Commission is required.",
+        notes: "Notes is required.",
+        accountId: "AccountId is required.",
       },
     },
   },
