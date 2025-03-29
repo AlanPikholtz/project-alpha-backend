@@ -7,6 +7,8 @@ import {
   putClient,
 } from "./clients.repository.js";
 
+import { fetchAccountById } from "../accounts/accounts.repository.js";
+
 export async function getAllClients(fastify, limit, offset) {
   const clients = await fetchClients(fastify, limit, offset);
   return clients.map((c) => ({
@@ -16,9 +18,10 @@ export async function getAllClients(fastify, limit, offset) {
     code: c.code,
     balance: c.balance,
     commission: c.commission,
+    notes: c.notes,
+    accountId: c.accountId,
     createdAt: c.created_at,
     updatedAt: c.updated_at,
-    updatedBy: c.updated_by,
   }));
 }
 
@@ -40,9 +43,10 @@ export async function getClientById(fastify, id) {
     code: client.code,
     balance: client.balance,
     commission: client.commission,
+    notes: client.notes,
+    accountId: client.accountId,
     createdAt: client.created_at,
     updatedAt: client.updated_at,
-    updatedBy: client.updated_by,
   };
 }
 
@@ -53,7 +57,8 @@ export async function createClient(
   code,
   balance,
   commission,
-  userId
+  notes,
+  accountId
 ) {
   const client = await fetchClientByCode(fastify, code);
 
@@ -65,6 +70,16 @@ export async function createClient(
       message: `This code is already registered. Please use a different code.`,
     };
 
+  const account = await fetchAccountById(fastify, accountId);
+
+  if (!account)
+    throw {
+      isCustom: true,
+      statusCode: 404,
+      errorType: ERROR_TYPES.NOT_FOUND,
+      message: `No account found with id ${accountId}.`,
+    };
+
   const result = await insertClient(
     fastify,
     firstName,
@@ -72,7 +87,8 @@ export async function createClient(
     code,
     balance,
     commission,
-    userId
+    notes,
+    accountId
   );
   return { id: result.insertId };
 }
@@ -82,9 +98,9 @@ export async function updateClient(
   clientId,
   firstName,
   lastName,
-  balance,
   commission,
-  userId
+  notes,
+  accountId
 ) {
   const client = await fetchClientById(fastify, clientId);
 
@@ -96,14 +112,24 @@ export async function updateClient(
       message: `No client found with id ${clientId}.`,
     };
 
+  const account = await fetchAccountById(fastify, accountId);
+
+  if (!account)
+    throw {
+      isCustom: true,
+      statusCode: 404,
+      errorType: ERROR_TYPES.NOT_FOUND,
+      message: `No account found with id ${accountId}.`,
+    };
+
   const succeeded = await putClient(
     fastify,
     clientId,
     firstName,
     lastName,
-    balance,
     commission,
-    userId
+    notes,
+    accountId
   );
 
   if (!succeeded)

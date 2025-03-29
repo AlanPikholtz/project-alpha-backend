@@ -5,11 +5,12 @@ export async function insertClient(
   code,
   balance,
   commission,
-  userId
+  notes,
+  accountId
 ) {
-  const [result] = await fastify.mysql.query(
-    "INSERT INTO clients (first_name, last_name, code, balance, commission, updated_by) VALUES (?, ?, ?, ?, ?, ?)",
-    [firstName, lastName, code, balance, commission, userId]
+  const [result] = await fastify.mysql.execute(
+    "INSERT INTO clients (first_name, last_name, code, balance, commission, notes, accountId) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    [firstName, lastName, code, balance, commission, notes, accountId]
   );
   return result;
 }
@@ -48,13 +49,13 @@ export async function putClient(
   clientId,
   firstName,
   lastName,
-  balance,
   commission,
-  userId
+  notes,
+  accountId
 ) {
   const [result] = await fastify.mysql.execute(
-    "UPDATE clients SET first_name = ?, last_name = ?, balance = ?, commission = ?, updated_by = ? WHERE id = ?",
-    [firstName, lastName, balance, commission, userId, clientId]
+    "UPDATE clients SET first_name = ?, last_name = ?, commission = ?, notes = ?, accountId = ? WHERE id = ?",
+    [firstName, lastName, commission, notes, accountId, clientId]
   );
   return result.affectedRows != 0;
 }
