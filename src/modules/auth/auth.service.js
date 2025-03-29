@@ -1,36 +1,36 @@
 import bcrypt from "bcrypt";
 import { ERROR_TYPES } from "../../constants/errorTypes.js";
 import {
-  fetchUserByEmail,
   fetchUserById,
+  fetchUserByUsername,
   insertUser,
 } from "./auth.repository.js";
 
-export async function registerUser(fastify, email, password) {
-  const existingUser = await fetchUserByEmail(fastify, email);
+export async function registerUser(fastify, username, password) {
+  const existingUser = await fetchUserByUsername(fastify, username);
   if (existingUser) {
     throw {
       isCustom: true,
       statusCode: 400,
       errorType: ERROR_TYPES.DUPLICATE_ENTRY,
       message:
-        "This email is already registered. Please use a different email.",
+        "This username is already registered. Please use a different username.",
     };
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const result = await insertUser(fastify, email, hashedPassword);
+  const result = await insertUser(fastify, username, hashedPassword);
   return { id: result.insertId };
 }
 
-export async function loginUser(fastify, email, password) {
-  const user = await fetchUserByEmail(fastify, email);
+export async function loginUser(fastify, username, password) {
+  const user = await fetchUserByUsername(fastify, username);
   if (!user)
     throw {
       isCustom: true,
       statusCode: 404,
       errorType: ERROR_TYPES.NOT_FOUND,
-      message: "No user found with this email.",
+      message: "No user found with this username.",
     };
 
   const isValid = await bcrypt.compare(password, user.password);
@@ -43,7 +43,7 @@ export async function loginUser(fastify, email, password) {
     };
 
   const accessToken = fastify.jwt.sign(
-    { id: user.id, email: user.email },
+    { id: user.id, username: user.username },
     { expiresIn: "3h" }
   );
 
@@ -72,7 +72,7 @@ export async function refreshTokens(fastify, token) {
     };
 
   const accessToken = fastify.jwt.sign(
-    { id: user.id, email: user.email },
+    { id: user.id, username: user.username },
     { expiresIn: "3h" }
   );
 
