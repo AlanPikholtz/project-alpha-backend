@@ -92,3 +92,42 @@ export const getAccountSchema = {
     },
   },
 };
+
+export const updateAccountSchema = {
+  description: "Update an account by ID",
+  tags: ["Accounts"],
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "integer", minimum: 1, description: "Account ID" },
+    },
+  },
+  body: {
+    type: "object",
+    required: ["name"],
+    properties: {
+      name: {
+        type: "string",
+        minLength: 3,
+        maxLength: 255,
+        description: "Account's name",
+        errorMessage: {
+          type: "Account name must be a string.",
+          minLength: "Account name must be at least 3 characters long.",
+          maxLength: "Account name cannot exceed 255 characters.",
+        },
+      },
+    },
+    errorMessage: {
+      required: {
+        name: "Account name is required.",
+      },
+    },
+  },
+  response: {
+    204: {
+      description: "Account updated successfully",
+    },
+  },
+};

@@ -2,12 +2,14 @@ import {
   createAccountHandler,
   getAccountHandler,
   getAllAccountsHandler,
+  updateAccountHandler,
 } from "./accounts.controller.js";
 
 import {
   createAccountSchema,
   getAccountSchema,
   getAllAccountsSchema,
+  updateAccountSchema,
 } from "./accounts.schema.js";
 
 export default async function clientRoutes(fastify) {
@@ -30,5 +32,14 @@ export default async function clientRoutes(fastify) {
     "/accounts",
     { schema: createAccountSchema, preValidation: [fastify.authenticate] },
     createAccountHandler
+  );
+
+  fastify.put(
+    "/accounts/:id",
+    {
+      schema: updateAccountSchema,
+      preValidation: [fastify.authenticate],
+    },
+    updateAccountHandler
   );
 }

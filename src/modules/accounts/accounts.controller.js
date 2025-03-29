@@ -2,6 +2,7 @@ import {
   createAccount,
   getAccountById,
   getAllAccounts,
+  updateAccount,
 } from "./accounts.service.js";
 
 export async function getAllAccountsHandler(req, reply) {
@@ -58,6 +59,25 @@ export async function createAccountHandler(req, reply) {
     return reply.status(201).send(accountId);
   } catch (error) {
     req.log.error(`❌ Error creating account: ${error.message}`);
+    throw error;
+  }
+}
+
+export async function updateAccountHandler(req, reply) {
+  try {
+    const { id } = req.params;
+
+    const { name } = req.body;
+
+    req.log.info(`📥 Updating account ${id}`);
+
+    await updateAccount(req.server, id, name);
+
+    req.log.info(`✅ Account updated successfully - Account id: ${id}`);
+
+    return reply.status(204).send();
+  } catch (error) {
+    req.log.error(`❌ Error updating account: ${error.message}`);
     throw error;
   }
 }

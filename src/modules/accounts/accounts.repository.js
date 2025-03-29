@@ -26,3 +26,11 @@ export async function fetchAccountById(fastify, id) {
   );
   return rows[0];
 }
+
+export async function putAccount(fastify, id, name) {
+  const [result] = await fastify.mysql.execute(
+    "UPDATE accounts SET name = ? WHERE id = ?",
+    [name, id]
+  );
+  return result.affectedRows != 0;
+}
