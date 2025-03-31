@@ -19,7 +19,7 @@ export async function getAllClients(fastify, limit, offset) {
     balance: c.balance,
     commission: c.commission,
     notes: c.notes,
-    accountId: c.accountId,
+    accountId: c.account_id,
     createdAt: c.created_at,
     updatedAt: c.updated_at,
   }));
@@ -44,7 +44,7 @@ export async function getClientById(fastify, id) {
     balance: client.balance,
     commission: client.commission,
     notes: client.notes,
-    accountId: client.accountId,
+    accountId: client.account_id,
     createdAt: client.created_at,
     updatedAt: client.updated_at,
   };
