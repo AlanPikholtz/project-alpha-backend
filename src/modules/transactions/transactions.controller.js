@@ -5,6 +5,8 @@ import {
   updateTransaction,
 } from "./transactions.service.js";
 
+import { DateTime } from "luxon";
+import { ERROR_TYPES } from "../../constants/errorTypes.js";
 import { normalizeResponse } from "../../utils/response.js";
 
 export async function createTransactionHandler(req, reply) {
@@ -52,15 +54,29 @@ export async function getClientTransactionsHandler(req, reply) {
 
 export async function getTransactionsHandler(req, reply) {
   try {
-    var { status, limit = 10, page = 1, amount } = req.query;
+    var { status, limit = 10, page = 1, amount, from, to } = req.query;
     const offset = (page - 1) * limit;
 
     if (limit === 0) {
       limit = null;
     }
 
+    if (from && to) {
+      const fromDate = DateTime.fromISO(from, { setZone: true }).toUTC();
+      const toDate = DateTime.fromISO(to, { setZone: true }).toUTC();
+
+      if (fromDate > toDate) {
+        throw {
+          isCustom: true,
+          statusCode: 400,
+          errorType: ERROR_TYPES.BAD_REQUEST,
+          message: '"from" no puede ser mayor que "to"',
+        };
+      }
+    }
+
     req.log.info(
-      `📥 Request received: GET /transactions?status=${status}&limit=${limit}&page=${page}&amount=${amount}`
+      `📥 Request received: GET /transactions?status=${status}&limit=${limit}&page=${page}&amount=${amount}&from=${from}&to=${to}`
     );
 
     console.time("⏱️ GET /transactions execution time");
@@ -70,7 +86,9 @@ export async function getTransactionsHandler(req, reply) {
       limit,
       offset,
       page,
-      amount
+      amount,
+      from,
+      to
     );
     console.timeEnd("⏱️ GET /transactions execution time");
 

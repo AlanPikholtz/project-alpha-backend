@@ -8,4 +8,5 @@ export const ERROR_TYPES = {
   DUPLICATE_ENTRY: "DuplicateEntryError",
   NOT_FOUND: "NotFoundError",
   INTERNAL_SERVER_ERROR: "InternalServerError",
+  BAD_REQUEST: "BadRequestError",
 };

@@ -35,27 +35,36 @@ export async function fetchTransactions(
   status,
   limit,
   offset,
-  amount
+  amount,
+  from,
+  to
 ) {
   let query = "SELECT * FROM transactions";
+  const conditions = [];
   const params = [];
 
-  var hasStatus = status === "assigned" || status === "unassigned";
-
   if (status === "assigned") {
-    query += " WHERE client_id IS NOT NULL";
+    conditions.push("client_id IS NOT NULL");
   } else if (status === "unassigned") {
-    query += " WHERE client_id IS NULL";
+    conditions.push("client_id IS NULL");
   }
 
   if (amount) {
-    if (!hasStatus) {
-      query += " WHERE";
-    } else {
-      query += " AND";
-    }
-    query += ` amount = ?`;
+    conditions.push("amount = ?");
     params.push(amount);
+  }
+
+  if (from) {
+    conditions.push("date >= ?");
+    params.push(from);
+  }
+  if (to) {
+    conditions.push("date <= ?");
+    params.push(to);
+  }
+
+  if (conditions.length > 0) {
+    query += " WHERE " + conditions.join(" AND ");
   }
 
   query += " ORDER BY created_at DESC";
@@ -71,27 +80,42 @@ export async function fetchTransactions(
   return data;
 }
 
-export async function fetchCountTransactions(fastify, status, amount) {
+export async function fetchCountTransactions(
+  fastify,
+  status,
+  amount,
+  from,
+  to
+) {
   let query = "SELECT COUNT(*) as total FROM transactions";
+  const conditions = [];
   const params = [];
-  var hasStatus = status === "assigned" || status === "unassigned";
+
   if (status === "assigned") {
-    query += " WHERE client_id IS NOT NULL";
+    conditions.push("client_id IS NOT NULL");
   } else if (status === "unassigned") {
-    query += " WHERE client_id IS NULL";
+    conditions.push("client_id IS NULL");
   }
 
   if (amount) {
-    if (!hasStatus) {
-      query += " WHERE";
-    } else {
-      query += " AND";
-    }
-    query += ` amount = ?`;
+    conditions.push("amount = ?");
     params.push(amount);
   }
 
-  const [rows] = await fastify.mysql.query(query, params);
+  if (from) {
+    conditions.push("date >= ?");
+    params.push(from);
+  }
+  if (to) {
+    conditions.push("date <= ?");
+    params.push(to);
+  }
+
+  if (conditions.length > 0) {
+    query += " WHERE " + conditions.join(" AND ");
+  }
+
+  const [rows] = await fastify.mysql.execute(query, params);
 
   return rows[0].total;
 }
