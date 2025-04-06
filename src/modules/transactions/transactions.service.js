@@ -41,10 +41,27 @@ export async function getClientTransactions(fastify, clientId) {
   return transactions;
 }
 
-export async function getTransactions(fastify, status, limit, offset, page) {
-  const transactions = await fetchTransactions(fastify, status, limit, offset);
+export async function getTransactions(
+  fastify,
+  status,
+  limit,
+  offset,
+  page,
+  amount
+) {
+  const transactions = await fetchTransactions(
+    fastify,
+    status,
+    limit,
+    offset,
+    amount
+  );
 
-  const totalTransactions = await fetchCountTransactions(fastify);
+  const totalTransactions = await fetchCountTransactions(
+    fastify,
+    status,
+    amount
+  );
   const totalPages = !limit ? 1 : Math.ceil(totalTransactions / limit);
 
   return {
