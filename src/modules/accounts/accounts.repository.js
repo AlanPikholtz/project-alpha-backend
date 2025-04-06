@@ -1,3 +1,5 @@
+import { normalizeRow } from "../../utils/db.js";
+
 export async function insertAccount(fastify, name) {
   const [result] = await fastify.mysql.query(
     "INSERT INTO accounts (name) VALUES (?)",
@@ -14,7 +16,9 @@ export async function fetchAccounts(fastify, limit, offset) {
   }
 
   const [rows] = await fastify.mysql.query(query);
-  return rows;
+
+  const data = rows.map((row) => normalizeRow(row));
+  return data;
 }
 
 export async function fetchAccountById(fastify, id) {
@@ -22,7 +26,8 @@ export async function fetchAccountById(fastify, id) {
     "SELECT * FROM accounts WHERE id = ?",
     [id]
   );
-  return rows[0];
+  const data = normalizeRow(rows[0]);
+  return data;
 }
 
 export async function putAccount(fastify, id, name) {
