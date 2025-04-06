@@ -8,12 +8,7 @@ import {
 
 export async function getAllAccounts(fastify, limit, offset) {
   const accounts = await fetchAccounts(fastify, limit, offset);
-  return accounts.map((c) => ({
-    id: c.id,
-    name: c.name,
-    createdAt: c.created_at,
-    updatedAt: c.updated_at,
-  }));
+  return accounts;
 }
 
 export async function getAccountById(fastify, id) {
@@ -27,12 +22,7 @@ export async function getAccountById(fastify, id) {
       message: `No account found with id ${id}.`,
     };
 
-  return {
-    id: account.id,
-    name: account.name,
-    createdAt: account.created_at,
-    updatedAt: account.updated_at,
-  };
+  return account;
 }
 
 export async function createAccount(fastify, name) {
