@@ -37,7 +37,9 @@ export async function fetchTransactions(
   offset,
   amount,
   from,
-  to
+  to,
+  sort,
+  order
 ) {
   let query = "SELECT * FROM transactions";
   const conditions = [];
@@ -67,7 +69,16 @@ export async function fetchTransactions(
     query += " WHERE " + conditions.join(" AND ");
   }
 
-  query += " ORDER BY created_at DESC";
+  const validSortFields = {
+    date: "date",
+    createdAt: "created_at",
+    assignedAt: "assigned_at",
+  };
+
+  const sortField = validSortFields[sort];
+  const sortOrder = order.toLowerCase() === "asc" ? "ASC" : "DESC";
+
+  query += ` ORDER BY ${sortField} ${sortOrder}`;
 
   if (limit !== null) {
     query += ` LIMIT ${limit} OFFSET ${offset}`;
