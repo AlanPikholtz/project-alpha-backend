@@ -151,6 +151,24 @@ export const getTransactionsSchema = {
           format: "Date must be an ISO 8601 date string.",
         },
       },
+      sort: {
+        type: "string",
+        enum: ["assignedAt", "createdAt", "date"],
+        description: "Sort field",
+        errorMessage: {
+          type: "Sort field must be a string.",
+          enum: "Sort field must be [assignedAt] | [createdAt] | [date].",
+        },
+      },
+      order: {
+        type: "string",
+        enum: ["asc", "desc"],
+        description: "Sort order",
+        errorMessage: {
+          type: "Sort order must be a string.",
+          enum: "Sort order must be [asc] | [desc].",
+        },
+      },
     },
   },
   response: {

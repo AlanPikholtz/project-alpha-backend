@@ -49,7 +49,9 @@ export async function getTransactions(
   page,
   amount,
   from,
-  to
+  to,
+  sort,
+  order
 ) {
   const transactions = await fetchTransactions(
     fastify,
@@ -58,7 +60,9 @@ export async function getTransactions(
     offset,
     amount,
     from,
-    to
+    to,
+    sort,
+    order
   );
 
   const totalTransactions = await fetchCountTransactions(

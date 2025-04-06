@@ -54,7 +54,16 @@ export async function getClientTransactionsHandler(req, reply) {
 
 export async function getTransactionsHandler(req, reply) {
   try {
-    var { status, limit = 10, page = 1, amount, from, to } = req.query;
+    var {
+      status,
+      limit = 10,
+      page = 1,
+      amount,
+      from,
+      to,
+      sort = "createdAt",
+      order = "desc",
+    } = req.query;
     const offset = (page - 1) * limit;
 
     if (limit === 0) {
@@ -76,7 +85,7 @@ export async function getTransactionsHandler(req, reply) {
     }
 
     req.log.info(
-      `📥 Request received: GET /transactions?status=${status}&limit=${limit}&page=${page}&amount=${amount}&from=${from}&to=${to}`
+      `📥 Request received: GET /transactions?status=${status}&limit=${limit}&page=${page}&amount=${amount}&from=${from}&to=${to}&sort=${sort}&order=${order}`
     );
 
     console.time("⏱️ GET /transactions execution time");
@@ -88,7 +97,9 @@ export async function getTransactionsHandler(req, reply) {
       page,
       amount,
       from,
-      to
+      to,
+      sort,
+      order
     );
     console.timeEnd("⏱️ GET /transactions execution time");
 
