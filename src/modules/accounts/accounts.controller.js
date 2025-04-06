@@ -24,7 +24,6 @@ export async function getAllAccountsHandler(req, reply) {
 
     req.log.info(`✅ Accounts retrieved: ${result.total} records found`);
 
-    console.log(result);
     return reply.send(result);
   } catch (error) {
     req.log.error(`❌ Error retrieving accounts: ${error.message}`);
