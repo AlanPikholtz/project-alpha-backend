@@ -1,36 +1,27 @@
 export const createTransactionSchema = {
-  description: "Create a deposit or payment for a client",
+  description: "Create a transaction",
   tags: ["Transactions"],
 
   body: {
     type: "object",
-    required: ["clientId", "accountId", "type", "amount"],
+    required: ["date", "type", "amount", "currency"],
     properties: {
-      clientId: {
-        type: "integer",
-        minimum: 1,
-        description: "Client ID",
+      date: {
+        type: "string",
+        format: "date-time",
+        description: "DateTime of the transaction",
         errorMessage: {
-          type: "Client id must be an integer.",
-          minimum: "Client id must be >= 1",
-        },
-      },
-      accountId: {
-        type: "integer",
-        minimum: 1,
-        description: "Account ID",
-        errorMessage: {
-          type: "Account id must be an integer.",
-          minimum: "Account id must be >= 1",
+          type: "Date must be a string.",
+          format: "Date must be an ISO 8601 date string.",
         },
       },
       type: {
         type: "string",
-        enum: ["deposit", "payment"],
+        enum: ["deposit", "withdrawal", "exchange"],
         description: "Transaction type",
         errorMessage: {
           type: "Transaction type must be a string.",
-          enum: "Transaction type must be [deposit] | [payment]",
+          enum: "Transaction type must be [deposit] | [withdrawal] | [exchange].",
         },
       },
       amount: {
@@ -42,13 +33,22 @@ export const createTransactionSchema = {
           minimum: "Transaction amount must be >= 0.01.",
         },
       },
+      currency: {
+        type: "string",
+        enum: ["ARS"],
+        description: "Transaction currency",
+        errorMessage: {
+          type: "Transaction currency must be a string.",
+          enum: "Transaction currency must be [ARS].",
+        },
+      },
     },
     errorMessage: {
       required: {
-        clientId: "Client id is required.",
-        accountId: "Account id is required.",
+        date: "Date is required.",
         type: "Type is required.",
         amount: "Amount is required.",
+        currency: "Currency is required.",
       },
     },
   },
@@ -84,13 +84,102 @@ export const getClientTransactionsSchema = {
         type: "object",
         properties: {
           id: { type: "integer" },
+          date: { type: "string", format: "date-time" },
+          type: { type: "string" },
+          amount: { type: "string" },
+          currency: { type: "string" },
           clientId: { type: "integer" },
           accountId: { type: "integer" },
-          type: { type: "string" },
-          amount: { type: "number" },
+          clientBalance: { type: "string" },
+          commissionAmount: { type: "string" },
+          assignedAt: { type: "string", format: "date-time" },
           createdAt: { type: "string", format: "date-time" },
         },
       },
+    },
+  },
+};
+
+export const getTransactionsSchema = {
+  description: "Retrieve transactions",
+  tags: ["Transactions"],
+  querystring: {
+    type: "object",
+    properties: {
+      status: {
+        type: "string",
+        enum: ["assigned", "unassigned"],
+        description: "Status of the transaction",
+        errorMessage: {
+          type: "Transaction status must be a string.",
+          enum: "Transaction status must be [assigned] | [unassigned].",
+        },
+      },
+      limit: {
+        type: "integer",
+        minimum: 0,
+        description: "Max number of transactions to return (0 = all)",
+      },
+      offset: {
+        type: "integer",
+        minimum: 0,
+        description: "Number of records to skip",
+      },
+    },
+  },
+  response: {
+    200: {
+      description: "List of transactions",
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          id: { type: "integer" },
+          date: { type: "string", format: "date-time" },
+          type: { type: "string" },
+          amount: { type: "string" },
+          currency: { type: "string" },
+          clientId: { type: ["integer", "null"] },
+          accountId: { type: ["integer", "null"] },
+          clientBalance: { type: ["string", "null"] },
+          commissionAmount: { type: ["string", "null"] },
+          assignedAt: { type: ["string", "null"], format: "date-time" },
+          createdAt: { type: "string", format: "date-time" },
+        },
+      },
+    },
+  },
+};
+
+export const updateTransactionSchema = {
+  description: "Update a transaction",
+  tags: ["Transactions"],
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "integer", minimum: 1, description: "Transaction ID" },
+    },
+  },
+  body: {
+    type: "object",
+    required: ["clientId"],
+    properties: {
+      clientId: {
+        type: "integer",
+        minimum: 1,
+        description: "Client ID",
+      },
+    },
+    errorMessage: {
+      required: {
+        clientId: "Client ID is required.",
+      },
+    },
+  },
+  response: {
+    204: {
+      description: "Transaction updated successfully",
     },
   },
 };
