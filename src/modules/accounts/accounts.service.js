@@ -2,13 +2,24 @@ import { ERROR_TYPES } from "../../constants/errorTypes.js";
 import {
   fetchAccountById,
   fetchAccounts,
+  fetchCountAccounts,
   insertAccount,
   putAccount,
 } from "./accounts.repository.js";
 
-export async function getAllAccounts(fastify, limit, offset) {
+export async function getAllAccounts(fastify, limit, offset, page) {
   const accounts = await fetchAccounts(fastify, limit, offset);
-  return accounts;
+
+  const totalAccounts = await fetchCountAccounts(fastify);
+  const totalPages = !limit ? 1 : Math.ceil(totalAccounts / limit);
+
+  return {
+    data: accounts,
+    total: totalAccounts,
+    page: page,
+    pages: totalPages,
+    limit: limit ?? 0,
+  };
 }
 
 export async function getAccountById(fastify, id) {

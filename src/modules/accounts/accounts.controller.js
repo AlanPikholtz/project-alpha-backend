@@ -7,23 +7,25 @@ import {
 
 export async function getAllAccountsHandler(req, reply) {
   try {
-    var { limit = 10, offset = 0 } = req.query;
+    var { limit = 10, page = 1 } = req.query;
+    const offset = (page - 1) * limit;
 
     if (limit === 0) {
       limit = null;
     }
 
     req.log.info(
-      `📥 Request received: GET /accounts?limit=${limit}&offset=${offset}`
+      `📥 Request received: GET /accounts?limit=${limit}&page=${page}`
     );
 
     console.time("⏱️ GET /accounts execution time");
-    const accounts = await getAllAccounts(req.server, limit, offset);
+    const result = await getAllAccounts(req.server, limit, offset, page);
     console.timeEnd("⏱️ GET /accounts execution time");
 
-    req.log.info(`✅ Accounts retrieved: ${accounts.length} records found`);
+    req.log.info(`✅ Accounts retrieved: ${result.total} records found`);
 
-    return reply.send(accounts);
+    console.log(result);
+    return reply.send(result);
   } catch (error) {
     req.log.error(`❌ Error retrieving accounts: ${error.message}`);
     throw error;

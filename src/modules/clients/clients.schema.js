@@ -9,31 +9,40 @@ export const getAllClientsSchema = {
         minimum: 0,
         description: "Max number of clients to return (0 = all)",
       },
-      offset: {
+      page: {
         type: "integer",
         minimum: 0,
-        description: "Number of records to skip",
+        description: "Number of page",
       },
     },
   },
   response: {
     200: {
       description: "List of clients",
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          id: { type: "integer" },
-          firstName: { type: "string" },
-          lastName: { type: "string" },
-          code: { type: "string" },
-          balance: { type: "string" },
-          commission: { type: "string" },
-          notes: { type: "string" },
-          accountId: { type: "integer" },
-          createdAt: { type: "string", format: "date-time" },
-          updatedAt: { type: "string", format: "date-time" },
+      type: "object",
+      properties: {
+        data: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "integer" },
+              firstName: { type: "string" },
+              lastName: { type: "string" },
+              code: { type: "string" },
+              balance: { type: "string" },
+              commission: { type: "string" },
+              notes: { type: "string" },
+              accountId: { type: "integer" },
+              createdAt: { type: "string", format: "date-time" },
+              updatedAt: { type: "string", format: "date-time" },
+            },
+          },
         },
+        page: { type: "integer" },
+        limit: { type: "integer" },
+        total: { type: "integer" },
+        pages: { type: "integer" },
       },
     },
   },

@@ -3,15 +3,25 @@ import {
   fetchClientByCode,
   fetchClientById,
   fetchClients,
+  fetchCountClients,
   insertClient,
   putClient,
 } from "./clients.repository.js";
 
 import { fetchAccountById } from "../accounts/accounts.repository.js";
 
-export async function getAllClients(fastify, limit, offset) {
+export async function getAllClients(fastify, limit, offset, page) {
   const clients = await fetchClients(fastify, limit, offset);
-  return clients;
+  const totalClients = await fetchCountClients(fastify);
+  const totalPages = !limit ? 1 : Math.ceil(totalClients / limit);
+
+  return {
+    data: clients,
+    total: totalClients,
+    page: page,
+    pages: totalPages,
+    limit: limit ?? 0,
+  };
 }
 
 export async function getClientById(fastify, id) {

@@ -119,31 +119,40 @@ export const getTransactionsSchema = {
         minimum: 0,
         description: "Max number of transactions to return (0 = all)",
       },
-      offset: {
+      page: {
         type: "integer",
         minimum: 0,
-        description: "Number of records to skip",
+        description: "Number of page",
       },
     },
   },
   response: {
     200: {
       description: "List of transactions",
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          id: { type: "integer" },
-          date: { type: "string", format: "date-time" },
-          type: { type: "string" },
-          amount: { type: "string" },
-          currency: { type: "string" },
-          clientId: { type: ["integer", "null"] },
-          accountId: { type: ["integer", "null"] },
-          commissionAmount: { type: ["string", "null"] },
-          assignedAt: { type: ["string", "null"], format: "date-time" },
-          createdAt: { type: "string", format: "date-time" },
+      type: "object",
+      properties: {
+        data: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "integer" },
+              date: { type: "string", format: "date-time" },
+              type: { type: "string" },
+              amount: { type: "string" },
+              currency: { type: "string" },
+              clientId: { type: ["integer", "null"] },
+              accountId: { type: ["integer", "null"] },
+              commissionAmount: { type: ["string", "null"] },
+              assignedAt: { type: ["string", "null"], format: "date-time" },
+              createdAt: { type: "string", format: "date-time" },
+            },
+          },
         },
+        page: { type: "integer" },
+        limit: { type: "integer" },
+        total: { type: "integer" },
+        pages: { type: "integer" },
       },
     },
   },
