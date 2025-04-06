@@ -30,13 +30,32 @@ export async function fetchTransactionById(fastify, id) {
   return data;
 }
 
-export async function fetchTransactions(fastify, status, limit, offset) {
+export async function fetchTransactions(
+  fastify,
+  status,
+  limit,
+  offset,
+  amount
+) {
   let query = "SELECT * FROM transactions";
+  const params = [];
+
+  var hasStatus = status === "assigned" || status === "unassigned";
 
   if (status === "assigned") {
     query += " WHERE client_id IS NOT NULL";
   } else if (status === "unassigned") {
     query += " WHERE client_id IS NULL";
+  }
+
+  if (amount) {
+    if (!hasStatus) {
+      query += " WHERE";
+    } else {
+      query += " AND";
+    }
+    query += ` amount = ?`;
+    params.push(amount);
   }
 
   query += " ORDER BY created_at DESC";
@@ -45,23 +64,34 @@ export async function fetchTransactions(fastify, status, limit, offset) {
     query += ` LIMIT ${limit} OFFSET ${offset}`;
   }
 
-  const [rows] = await fastify.mysql.query(query);
+  const [rows] = await fastify.mysql.query(query, params);
 
   const data = rows.map((row) => normalizeRow(row));
 
   return data;
 }
 
-export async function fetchCountTransactions(fastify, status) {
+export async function fetchCountTransactions(fastify, status, amount) {
   let query = "SELECT COUNT(*) as total FROM transactions";
-
+  const params = [];
+  var hasStatus = status === "assigned" || status === "unassigned";
   if (status === "assigned") {
     query += " WHERE client_id IS NOT NULL";
   } else if (status === "unassigned") {
     query += " WHERE client_id IS NULL";
   }
 
-  const [rows] = await fastify.mysql.query(query);
+  if (amount) {
+    if (!hasStatus) {
+      query += " WHERE";
+    } else {
+      query += " AND";
+    }
+    query += ` amount = ?`;
+    params.push(amount);
+  }
+
+  const [rows] = await fastify.mysql.query(query, params);
 
   return rows[0].total;
 }

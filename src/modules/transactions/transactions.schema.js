@@ -124,6 +124,15 @@ export const getTransactionsSchema = {
         minimum: 0,
         description: "Number of page",
       },
+      amount: {
+        type: "number",
+        minimum: 0.01,
+        description: "Transaction amount",
+        errorMessage: {
+          type: "Transaction amount must be a number.",
+          minimum: "Transaction amount must be >= 0.01.",
+        },
+      },
     },
   },
   response: {
