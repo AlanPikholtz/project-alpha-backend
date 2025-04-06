@@ -77,9 +77,17 @@ export async function updateTransaction(fastify, transactionId, clientId) {
       };
     }
 
-    oldClientBalance = transaction.clientBalance
-      .plus(transaction.amount)
-      .toString();
+    const oldClient = await fetchClientById(fastify, transaction.clientId);
+
+    if (!oldClient)
+      throw {
+        isCustom: true,
+        statusCode: 404,
+        errorType: ERROR_TYPES.NOT_FOUND,
+        message: `No client found with id ${transaction.clientId}.`,
+      };
+
+    oldClientBalance = oldClient.balance.plus(transaction.amount).toString();
   }
 
   const updatedBalance = client.balance.minus(transaction.amount).toString();

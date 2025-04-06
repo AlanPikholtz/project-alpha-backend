@@ -68,8 +68,8 @@ export async function putTransactionAndUpdateBalance(
     await conn.beginTransaction();
 
     await conn.query(
-      "UPDATE transactions SET client_id = ?, account_id = ?, client_balance = ?, commission_amount = ?, assigned_at = UTC_TIMESTAMP() WHERE id = ?",
-      [clientId, accountId, clientBalance, commissionAmount, transactionId]
+      "UPDATE transactions SET client_id = ?, account_id = ?, commission_amount = ?, assigned_at = UTC_TIMESTAMP() WHERE id = ?",
+      [clientId, accountId, commissionAmount, transactionId]
     );
 
     await conn.query("UPDATE clients SET balance = ? WHERE id = ?", [

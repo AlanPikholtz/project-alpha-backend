@@ -7,13 +7,7 @@ function toCamelCase(str) {
 
 export function normalizeRow(row) {
   const dateKeys = ["created_at", "updated_at", "assigned_at", "date"];
-  const decimalKeys = [
-    "balance",
-    "commission",
-    "amount",
-    "commission_amount",
-    "client_balance",
-  ];
+  const decimalKeys = ["balance", "commission", "amount", "commission_amount"];
 
   if (!row) return row;
 
