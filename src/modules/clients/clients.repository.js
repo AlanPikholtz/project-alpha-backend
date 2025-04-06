@@ -1,3 +1,5 @@
+import { normalizeRow } from "../../utils/db.js";
+
 export async function insertClient(
   fastify,
   firstName,
@@ -17,15 +19,15 @@ export async function insertClient(
 
 export async function fetchClients(fastify, limit, offset) {
   let query = "SELECT * FROM clients";
-  let params = [];
 
   if (limit !== null) {
-    query += " LIMIT ? OFFSET ?";
-    params = [limit, offset];
+    query += ` LIMIT ${limit} OFFSET ${offset}`;
   }
 
-  const [rows] = await fastify.mysql.query(query, params);
-  return rows;
+  const [rows] = await fastify.mysql.query(query);
+
+  const data = rows.map((row) => normalizeRow(row));
+  return data;
 }
 
 export async function fetchClientById(fastify, id) {
@@ -33,7 +35,9 @@ export async function fetchClientById(fastify, id) {
     "SELECT * FROM clients WHERE id = ?",
     [id]
   );
-  return rows[0];
+
+  const data = normalizeRow(rows[0]);
+  return data;
 }
 
 export async function fetchClientByCode(fastify, code) {
@@ -41,7 +45,8 @@ export async function fetchClientByCode(fastify, code) {
     "SELECT * FROM clients WHERE code = ?",
     [code]
   );
-  return rows[0];
+  const data = normalizeRow(rows[0]);
+  return data;
 }
 
 export async function putClient(
