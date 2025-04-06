@@ -11,18 +11,7 @@ import { fetchAccountById } from "../accounts/accounts.repository.js";
 
 export async function getAllClients(fastify, limit, offset) {
   const clients = await fetchClients(fastify, limit, offset);
-  return clients.map((c) => ({
-    id: c.id,
-    firstName: c.first_name,
-    lastName: c.last_name,
-    code: c.code,
-    balance: c.balance,
-    commission: c.commission,
-    notes: c.notes,
-    accountId: c.account_id,
-    createdAt: c.created_at,
-    updatedAt: c.updated_at,
-  }));
+  return clients;
 }
 
 export async function getClientById(fastify, id) {
@@ -36,18 +25,7 @@ export async function getClientById(fastify, id) {
       message: `No client found with id ${id}.`,
     };
 
-  return {
-    id: client.id,
-    firstName: client.first_name,
-    lastName: client.last_name,
-    code: client.code,
-    balance: client.balance,
-    commission: client.commission,
-    notes: client.notes,
-    accountId: client.account_id,
-    createdAt: client.created_at,
-    updatedAt: client.updated_at,
-  };
+  return client;
 }
 
 export async function createClient(

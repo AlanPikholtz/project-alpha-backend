@@ -8,14 +8,12 @@ export async function insertAccount(fastify, name) {
 
 export async function fetchAccounts(fastify, limit, offset) {
   let query = "SELECT id, name, created_at, updated_at FROM accounts";
-  let params = [];
 
   if (limit !== null) {
-    query += " LIMIT ? OFFSET ?";
-    params = [limit, offset];
+    query += ` LIMIT ${limit} OFFSET ${offset}`;
   }
 
-  const [rows] = await fastify.mysql.query(query, params);
+  const [rows] = await fastify.mysql.query(query);
   return rows;
 }
 
