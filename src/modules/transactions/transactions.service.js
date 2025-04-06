@@ -47,20 +47,26 @@ export async function getTransactions(
   limit,
   offset,
   page,
-  amount
+  amount,
+  from,
+  to
 ) {
   const transactions = await fetchTransactions(
     fastify,
     status,
     limit,
     offset,
-    amount
+    amount,
+    from,
+    to
   );
 
   const totalTransactions = await fetchCountTransactions(
     fastify,
     status,
-    amount
+    amount,
+    from,
+    to
   );
   const totalPages = !limit ? 1 : Math.ceil(totalTransactions / limit);
 

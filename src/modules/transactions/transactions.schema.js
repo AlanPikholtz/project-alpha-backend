@@ -133,6 +133,24 @@ export const getTransactionsSchema = {
           minimum: "Transaction amount must be >= 0.01.",
         },
       },
+      from: {
+        type: "string",
+        format: "date-time",
+        description: "Start date for filtering transactions",
+        errorMessage: {
+          type: "Date must be a string.",
+          format: "Date must be an ISO 8601 date string.",
+        },
+      },
+      to: {
+        type: "string",
+        format: "date-time",
+        description: "End date for filtering transactions",
+        errorMessage: {
+          type: "Date must be a string.",
+          format: "Date must be an ISO 8601 date string.",
+        },
+      },
     },
   },
   response: {
