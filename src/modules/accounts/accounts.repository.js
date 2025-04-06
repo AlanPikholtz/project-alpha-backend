@@ -9,7 +9,7 @@ export async function insertAccount(fastify, name) {
 }
 
 export async function fetchAccounts(fastify, limit, offset) {
-  let query = "SELECT id, name, created_at, updated_at FROM accounts";
+  let query = "SELECT * FROM accounts";
 
   if (limit !== null) {
     query += ` LIMIT ${limit} OFFSET ${offset}`;
@@ -19,6 +19,14 @@ export async function fetchAccounts(fastify, limit, offset) {
 
   const data = rows.map((row) => normalizeRow(row));
   return data;
+}
+
+export async function fetchCountAccounts(fastify) {
+  let query = "SELECT COUNT(*) AS total FROM accounts";
+
+  const [rows] = await fastify.mysql.query(query);
+
+  return rows[0].total;
 }
 
 export async function fetchAccountById(fastify, id) {

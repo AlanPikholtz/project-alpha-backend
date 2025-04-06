@@ -1,4 +1,5 @@
 import {
+  fetchCountTransactions,
   fetchTransactionById,
   fetchTransactions,
   fetchTransactionsByClientId,
@@ -40,9 +41,19 @@ export async function getClientTransactions(fastify, clientId) {
   return transactions;
 }
 
-export async function getTransactions(fastify, status, limit, offset) {
+export async function getTransactions(fastify, status, limit, offset, page) {
   const transactions = await fetchTransactions(fastify, status, limit, offset);
-  return transactions;
+
+  const totalTransactions = await fetchCountTransactions(fastify);
+  const totalPages = !limit ? 1 : Math.ceil(totalTransactions / limit);
+
+  return {
+    data: transactions,
+    total: totalTransactions,
+    page: page,
+    pages: totalPages,
+    limit: limit ?? 0,
+  };
 }
 
 export async function updateTransaction(fastify, transactionId, clientId) {

@@ -7,18 +7,19 @@ import {
 
 export async function getAllClientsHandler(req, reply) {
   try {
-    var { limit = 10, offset = 0 } = req.query;
+    var { limit = 10, page = 1 } = req.query;
+    const offset = (page - 1) * limit;
 
     if (limit === 0) {
       limit = null;
     }
 
     req.log.info(
-      `📥 Request received: GET /clients?limit=${limit}&offset=${offset}`
+      `📥 Request received: GET /clients?limit=${limit}&page=${page}`
     );
 
     console.time("⏱️ GET /clients execution time");
-    const clients = await getAllClients(req.server, limit, offset);
+    const clients = await getAllClients(req.server, limit, offset, page);
     console.timeEnd("⏱️ GET /clients execution time");
 
     req.log.info(`✅ Clients retrieved: ${clients.length} records found`);

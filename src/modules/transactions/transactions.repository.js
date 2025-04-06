@@ -52,6 +52,20 @@ export async function fetchTransactions(fastify, status, limit, offset) {
   return data;
 }
 
+export async function fetchCountTransactions(fastify, status) {
+  let query = "SELECT COUNT(*) as total FROM transactions";
+
+  if (status === "assigned") {
+    query += " WHERE client_id IS NOT NULL";
+  } else if (status === "unassigned") {
+    query += " WHERE client_id IS NULL";
+  }
+
+  const [rows] = await fastify.mysql.query(query);
+
+  return rows[0].total;
+}
+
 export async function putTransactionAndUpdateBalance(
   fastify,
   transactionId,

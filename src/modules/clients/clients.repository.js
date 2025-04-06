@@ -30,6 +30,14 @@ export async function fetchClients(fastify, limit, offset) {
   return data;
 }
 
+export async function fetchCountClients(fastify) {
+  let query = "SELECT COUNT(*) AS total FROM clients";
+
+  const [rows] = await fastify.mysql.query(query);
+
+  return rows[0].total;
+}
+
 export async function fetchClientById(fastify, id) {
   const [rows] = await fastify.mysql.query(
     "SELECT * FROM clients WHERE id = ?",
