@@ -6,6 +6,7 @@ import errorHandler from "./middlewares/errorHandler.js";
 import accountRoutes from "./modules/accounts/accounts.routes.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import clientRoutes from "./modules/clients/clients.routes.js";
+import metricsRoutes from "./modules/metrics/metrics.routes.js";
 import transactionRoutes from "./modules/transactions/transactions.routes.js";
 import corsPlugin from "./plugins/cors.js";
 import helmetPlugin from "./plugins/helmet.js";
@@ -46,5 +47,6 @@ await fastify.register(authRoutes);
 await fastify.register(clientRoutes);
 await fastify.register(transactionRoutes);
 await fastify.register(accountRoutes);
+await fastify.register(metricsRoutes);
 
 export default fastify;
