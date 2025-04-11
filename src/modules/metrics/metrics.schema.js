@@ -41,7 +41,7 @@ export const getMetricsSchema = {
                 type: "integer",
                 description: "Client id",
               },
-              clientName: {
+              clientFullName: {
                 type: "string",
                 description: "Client name",
               },
@@ -62,7 +62,7 @@ export const getMetricsSchema = {
                 type: "integer",
                 description: "Client id",
               },
-              clientName: {
+              clientFullName: {
                 type: "string",
                 description: "Client name",
               },
