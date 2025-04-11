@@ -187,6 +187,7 @@ export const getTransactionsSchema = {
               amount: { type: "string" },
               currency: { type: "string" },
               clientId: { type: ["integer", "null"] },
+              clientFullName: { type: ["string", "null"] },
               accountId: { type: ["integer", "null"] },
               commissionAmount: { type: ["string", "null"] },
               assignedAt: { type: ["string", "null"], format: "date-time" },
