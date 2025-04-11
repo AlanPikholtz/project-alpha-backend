@@ -48,6 +48,63 @@ export const getAllClientsSchema = {
   },
 };
 
+export const getClientsByAccountSchema = {
+  description: "Retrieve clients by account",
+  tags: ["Clients"],
+  params: {
+    type: "object",
+    required: ["accountId"],
+    properties: {
+      accountId: { type: "integer", minimum: 1, description: "Account ID" },
+    },
+  },
+  querystring: {
+    type: "object",
+    properties: {
+      limit: {
+        type: "integer",
+        minimum: 0,
+        description: "Max number of clients to return (0 = all)",
+      },
+      page: {
+        type: "integer",
+        minimum: 0,
+        description: "Number of page",
+      },
+    },
+  },
+  response: {
+    200: {
+      description: "List of clients",
+      type: "object",
+      properties: {
+        data: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "integer" },
+              firstName: { type: "string" },
+              lastName: { type: "string" },
+              code: { type: "string" },
+              balance: { type: "string" },
+              commission: { type: "string" },
+              notes: { type: "string" },
+              accountId: { type: "integer" },
+              createdAt: { type: "string", format: "date-time" },
+              updatedAt: { type: "string", format: "date-time" },
+            },
+          },
+        },
+        page: { type: "integer" },
+        limit: { type: "integer" },
+        total: { type: "integer" },
+        pages: { type: "integer" },
+      },
+    },
+  },
+};
+
 export const createClientSchema = {
   description: "Create a new client",
   tags: ["Clients"],
