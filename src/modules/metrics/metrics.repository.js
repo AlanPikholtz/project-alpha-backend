@@ -22,7 +22,7 @@ export async function fetchMetrics(fastify) {
     fastify.mysql.query(`
       SELECT 
         c.id AS clientId,
-        c.first_name AS clientName,
+        CONCAT(c.first_name, ' ', c.last_name) AS clientFullName,
         SUM(t.amount) AS totalDeposits
       FROM transactions t
       JOIN clients c ON t.client_id = c.id
@@ -34,7 +34,7 @@ export async function fetchMetrics(fastify) {
     fastify.mysql.query(`
       SELECT 
         c.id AS clientId,
-        c.first_name AS clientName,
+        CONCAT(c.first_name, ' ', c.last_name) AS clientFullName,
         SUM(t.commission_amount) AS totalCommissions
       FROM transactions t
       JOIN clients c ON t.client_id = c.id
