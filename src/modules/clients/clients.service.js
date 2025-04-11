@@ -10,9 +10,21 @@ import {
 
 import { fetchAccountById } from "../accounts/accounts.repository.js";
 
-export async function getAllClients(fastify, limit, offset, page) {
-  const clients = await fetchClients(fastify, limit, offset);
-  const totalClients = await fetchCountClients(fastify);
+export async function getAllClients(fastify, limit, offset, page, accountId) {
+  if (accountId) {
+    const account = await fetchAccountById(fastify, accountId);
+
+    if (!account)
+      throw {
+        isCustom: true,
+        statusCode: 404,
+        errorType: ERROR_TYPES.NOT_FOUND,
+        message: `No account found with id ${accountId}.`,
+      };
+  }
+
+  const clients = await fetchClients(fastify, limit, offset, accountId);
+  const totalClients = await fetchCountClients(fastify, accountId);
   const totalPages = !limit ? 1 : Math.ceil(totalClients / limit);
 
   return {

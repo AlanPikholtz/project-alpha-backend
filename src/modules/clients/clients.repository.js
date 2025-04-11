@@ -17,23 +17,35 @@ export async function insertClient(
   return result;
 }
 
-export async function fetchClients(fastify, limit, offset) {
+export async function fetchClients(fastify, limit, offset, accountId) {
   let query = "SELECT * FROM clients";
+  const params = [];
+
+  if (accountId) {
+    query += " WHERE account_id = ?";
+    params.push(accountId);
+  }
 
   if (limit !== null) {
     query += ` LIMIT ${limit} OFFSET ${offset}`;
   }
 
-  const [rows] = await fastify.mysql.query(query);
+  const [rows] = await fastify.mysql.query(query, params);
 
   const data = rows.map((row) => normalizeRow(row));
   return data;
 }
 
-export async function fetchCountClients(fastify) {
+export async function fetchCountClients(fastify, accountId) {
   let query = "SELECT COUNT(*) AS total FROM clients";
+  const params = [];
 
-  const [rows] = await fastify.mysql.query(query);
+  if (accountId) {
+    query += " WHERE account_id = ?";
+    params.push(accountId);
+  }
+
+  const [rows] = await fastify.mysql.execute(query, params);
 
   return rows[0].total;
 }
