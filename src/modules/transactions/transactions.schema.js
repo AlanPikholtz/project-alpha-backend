@@ -66,6 +66,29 @@ export const createTransactionSchema = {
 export const getClientTransactionsSchema = {
   description: "Retrieve transactions of a client",
   tags: ["Transactions"],
+  querystring: {
+    type: "object",
+    properties: {
+      from: {
+        type: "string",
+        format: "date-time",
+        description: "Start date for filtering transactions",
+        errorMessage: {
+          type: "Date must be a string.",
+          format: "Date must be an ISO 8601 date string.",
+        },
+      },
+      to: {
+        type: "string",
+        format: "date-time",
+        description: "End date for filtering transactions",
+        errorMessage: {
+          type: "Date must be a string.",
+          format: "Date must be an ISO 8601 date string.",
+        },
+      },
+    },
+  },
   params: {
     type: "object",
     properties: {

@@ -36,10 +36,15 @@ export async function getClientTransactionsHandler(req, reply) {
   try {
     const { clientId } = req.params;
 
+    var {
+      from,
+      to,
+    } = req.query;
+
     req.log.info(`📥 Fetching transactions for client ${clientId}`);
 
     console.time(`⏱️ GET /transactions/client/${clientId} execution time`);
-    const transactions = await getClientTransactions(req.server, clientId);
+    const transactions = await getClientTransactions(req.server, clientId, from, to);
     console.timeEnd(`⏱️ GET /transactions/client/${clientId} execution time`);
 
     req.log.info(`✅ Retrieved ${transactions.length} transactions`);

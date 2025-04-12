@@ -26,7 +26,7 @@ export async function createTransaction(fastify, date, type, amount, currency) {
   return { id: result.insertId };
 }
 
-export async function getClientTransactions(fastify, clientId) {
+export async function getClientTransactions(fastify, clientId, from, to) {
   const client = await fetchClientById(fastify, clientId);
 
   if (!client)
@@ -37,7 +37,7 @@ export async function getClientTransactions(fastify, clientId) {
       message: `No client found with id ${clientId}.`,
     };
 
-  const transactions = await fetchTransactionsByClientId(fastify, clientId);
+  const transactions = await fetchTransactionsByClientId(fastify, clientId, from, to);
   return transactions;
 }
 
