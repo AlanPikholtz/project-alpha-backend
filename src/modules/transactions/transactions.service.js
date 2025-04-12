@@ -1,9 +1,9 @@
 import {
+  bulkInsertTransactions,
   fetchCountTransactions,
   fetchTransactionById,
   fetchTransactions,
   fetchTransactionsByClientId,
-  insertTransaction,
   putTransactionAndUpdateBalance,
 } from "./transactions.repository.js";
 
@@ -44,6 +44,37 @@ export async function createTransaction(
     accountId
   );
   return { id: result.insertId };
+}
+
+export async function bulkCreateTransactions(fastify, transactions, accountId) {
+  const account = await fetchAccountById(fastify, accountId);
+
+  if (!account)
+    throw {
+      isCustom: true,
+      statusCode: 404,
+      errorType: ERROR_TYPES.NOT_FOUND,
+      message: `No account found with id ${accountId}.`,
+    };
+
+  const parsedTransactions = transactions.map((t) => {
+    const parsedDate = DateTime.fromISO(t.date, { setZone: true })
+      .toUTC()
+      .toFormat("yyyy-MM-dd HH:mm:ss");
+
+    return {
+      ...t,
+      date: parsedDate,
+    };
+  });
+
+  const affectedRows = await bulkInsertTransactions(
+    fastify,
+    parsedTransactions,
+    accountId
+  );
+
+  return { affectedRows: affectedRows };
 }
 
 export async function getClientTransactions(fastify, clientId, from, to) {
