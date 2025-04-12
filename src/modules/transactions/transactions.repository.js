@@ -10,7 +10,7 @@ export async function insertTransaction(fastify, date, type, amount, currency) {
 
 export async function fetchTransactionsByClientId(fastify, clientId) {
   const [rows] = await fastify.mysql.execute(
-    "SELECT * FROM transactions WHERE client_id = ? ORDER BY created_at DESC",
+    "SELECT * FROM transactions WHERE client_id = ? ORDER BY assigned_at DESC",
     [clientId]
   );
 
