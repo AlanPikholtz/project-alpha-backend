@@ -8,11 +8,31 @@ export async function insertTransaction(fastify, date, type, amount, currency) {
   return result;
 }
 
-export async function fetchTransactionsByClientId(fastify, clientId) {
-  const [rows] = await fastify.mysql.execute(
-    "SELECT * FROM transactions WHERE client_id = ? ORDER BY assigned_at DESC",
-    [clientId]
-  );
+export async function fetchTransactionsByClientId(fastify, clientId, from, to) {
+  let query = "SELECT * FROM transactions";
+  const params = [];
+  const conditions = [];
+
+  conditions.push("client_id = ?");
+  params.push(clientId);
+
+  if (from) {
+    conditions.push("date >= ?");
+    params.push(from);
+  }
+
+  if (to) {
+    conditions.push("date <= ?");
+    params.push(to);
+  }
+
+  if (conditions.length > 0) {
+    query += " WHERE " + conditions.join(" AND ");
+  }
+
+  query += ` ORDER BY assigned_at DESC`;
+
+  const [rows] = await fastify.mysql.execute(query, params);
 
   const data = rows.map((row) => normalizeRow(row));
 
