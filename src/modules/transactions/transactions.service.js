@@ -4,6 +4,7 @@ import {
   fetchTransactionById,
   fetchTransactions,
   fetchTransactionsByClientId,
+  insertTransaction,
   putTransactionAndUpdateBalance,
 } from "./transactions.repository.js";
 
