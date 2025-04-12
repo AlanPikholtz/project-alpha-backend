@@ -7,11 +7,30 @@ import {
   putTransactionAndUpdateBalance,
 } from "./transactions.repository.js";
 
+import { fetchAccountById } from "../accounts/accounts.repository.js";
+
 import { DateTime } from "luxon";
 import { ERROR_TYPES } from "../../constants/errorTypes.js";
 import { fetchClientById } from "../clients/clients.repository.js";
 
-export async function createTransaction(fastify, date, type, amount, currency) {
+export async function createTransaction(
+  fastify,
+  date,
+  type,
+  amount,
+  currency,
+  accountId
+) {
+  const account = await fetchAccountById(fastify, accountId);
+
+  if (!account)
+    throw {
+      isCustom: true,
+      statusCode: 404,
+      errorType: ERROR_TYPES.NOT_FOUND,
+      message: `No account found with id ${accountId}.`,
+    };
+
   const formatedTransactonDate = DateTime.fromISO(date, { setZone: true })
     .toUTC()
     .toFormat("yyyy-MM-dd HH:mm:ss");
@@ -21,7 +40,8 @@ export async function createTransaction(fastify, date, type, amount, currency) {
     formatedTransactonDate,
     type,
     amount,
-    currency
+    currency,
+    accountId
   );
   return { id: result.insertId };
 }
@@ -37,7 +57,12 @@ export async function getClientTransactions(fastify, clientId, from, to) {
       message: `No client found with id ${clientId}.`,
     };
 
-  const transactions = await fetchTransactionsByClientId(fastify, clientId, from, to);
+  const transactions = await fetchTransactionsByClientId(
+    fastify,
+    clientId,
+    from,
+    to
+  );
   return transactions;
 }
 
@@ -104,6 +129,14 @@ export async function updateTransaction(fastify, transactionId, clientId) {
       message: `No client found with id ${clientId}.`,
     };
 
+  if (client.accountId !== transaction.accountId)
+    throw {
+      isCustom: true,
+      statusCode: 400,
+      errorType: ERROR_TYPES.BAD_REQUEST,
+      message: `Client ${client.id} does not belong to the account ${transaction.accountId}.`,
+    };
+
   var oldClientBalance = null;
   if (transaction.clientId) {
     if (transaction.clientId === clientId) {
@@ -137,7 +170,6 @@ export async function updateTransaction(fastify, transactionId, clientId) {
     fastify,
     transactionId,
     client.id,
-    client.accountId,
     updatedBalance,
     commissionAmount,
     transaction.clientId ?? null,

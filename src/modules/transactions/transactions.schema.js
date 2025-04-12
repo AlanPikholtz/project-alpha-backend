@@ -4,7 +4,7 @@ export const createTransactionSchema = {
 
   body: {
     type: "object",
-    required: ["date", "type", "amount", "currency"],
+    required: ["date", "type", "amount", "currency", "accountId"],
     properties: {
       date: {
         type: "string",
@@ -42,6 +42,13 @@ export const createTransactionSchema = {
           enum: "Transaction currency must be [ARS].",
         },
       },
+      accountId: {
+        type: "integer",
+        description: "Account ID",
+        errorMessage: {
+          type: "Account ID must be an integer.",
+        },
+      },
     },
     errorMessage: {
       required: {
@@ -49,6 +56,7 @@ export const createTransactionSchema = {
         type: "Type is required.",
         amount: "Amount is required.",
         currency: "Currency is required.",
+        accountId: "Account ID is required.",
       },
     },
   },

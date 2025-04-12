@@ -1,9 +1,16 @@
 import { normalizeRow } from "../../utils/db.js";
 
-export async function insertTransaction(fastify, date, type, amount, currency) {
+export async function insertTransaction(
+  fastify,
+  date,
+  type,
+  amount,
+  currency,
+  accountId
+) {
   const [result] = await fastify.mysql.execute(
-    "INSERT INTO transactions (date, type, amount, currency) VALUES (?, ?, ?, ?)",
-    [date, type, amount, currency]
+    "INSERT INTO transactions (date, type, amount, currency, account_id) VALUES (?, ?, ?, ?, ?)",
+    [date, type, amount, currency, accountId]
   );
   return result;
 }
@@ -160,7 +167,6 @@ export async function putTransactionAndUpdateBalance(
   fastify,
   transactionId,
   clientId,
-  accountId,
   clientBalance,
   commissionAmount,
   oldClientId,
@@ -172,8 +178,8 @@ export async function putTransactionAndUpdateBalance(
     await conn.beginTransaction();
 
     await conn.query(
-      "UPDATE transactions SET client_id = ?, account_id = ?, commission_amount = ?, assigned_at = UTC_TIMESTAMP() WHERE id = ?",
-      [clientId, accountId, commissionAmount, transactionId]
+      "UPDATE transactions SET client_id = ?, commission_amount = ?, assigned_at = UTC_TIMESTAMP() WHERE id = ?",
+      [clientId, commissionAmount, transactionId]
     );
 
     await conn.query("UPDATE clients SET balance = ? WHERE id = ?", [

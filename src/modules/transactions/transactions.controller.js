@@ -11,7 +11,7 @@ import { normalizeResponse } from "../../utils/response.js";
 
 export async function createTransactionHandler(req, reply) {
   try {
-    const { date, type, amount, currency } = req.body;
+    const { date, type, amount, currency, accountId } = req.body;
 
     req.log.info(`📥 Creating transaction: date ${date} - ${type}`);
 
@@ -20,7 +20,8 @@ export async function createTransactionHandler(req, reply) {
       date,
       type,
       amount,
-      currency
+      currency,
+      accountId
     );
 
     req.log.info(`✅ Transaction created with ID: ${transactionId}`);
@@ -36,15 +37,17 @@ export async function getClientTransactionsHandler(req, reply) {
   try {
     const { clientId } = req.params;
 
-    var {
-      from,
-      to,
-    } = req.query;
+    var { from, to } = req.query;
 
     req.log.info(`📥 Fetching transactions for client ${clientId}`);
 
     console.time(`⏱️ GET /transactions/client/${clientId} execution time`);
-    const transactions = await getClientTransactions(req.server, clientId, from, to);
+    const transactions = await getClientTransactions(
+      req.server,
+      clientId,
+      from,
+      to
+    );
     console.timeEnd(`⏱️ GET /transactions/client/${clientId} execution time`);
 
     req.log.info(`✅ Retrieved ${transactions.length} transactions`);
