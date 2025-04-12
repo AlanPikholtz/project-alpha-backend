@@ -15,6 +15,24 @@ export async function insertTransaction(
   return result;
 }
 
+export async function bulkInsertTransactions(fastify, transactions, accountId) {
+  const values = [];
+  const placeholders = transactions
+    .map((t) => {
+      values.push(t.date, t.type, t.amount, t.currency, accountId);
+      return "(?, ?, ?, ?, ?)";
+    })
+    .join(", ");
+
+  const sql = `
+  INSERT INTO transactions (date, type, amount, currency, account_id)
+  VALUES ${placeholders}
+  `;
+
+  const [result] = await fastify.mysql.execute(sql, values);
+  return result.affectedRows;
+}
+
 export async function fetchTransactionsByClientId(fastify, clientId, from, to) {
   let query = "SELECT * FROM transactions";
   const params = [];

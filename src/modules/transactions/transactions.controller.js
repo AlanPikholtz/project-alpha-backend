@@ -1,4 +1,5 @@
 import {
+  bulkCreateTransactions,
   createTransaction,
   getClientTransactions,
   getTransactions,
@@ -29,6 +30,28 @@ export async function createTransactionHandler(req, reply) {
     return reply.status(201).send(transactionId);
   } catch (error) {
     req.log.error(`❌ Error creating transaction: ${error.message}`);
+    throw error;
+  }
+}
+
+export async function bulkCreateTransactionsHandler(req, reply) {
+  try {
+    const { accountId } = req.params;
+    const transactions = req.body;
+
+    req.log.info(`📥 Bulk creating ${transactions.length} transactions`);
+
+    const transactionsCreated = await bulkCreateTransactions(
+      req.server,
+      transactions,
+      accountId
+    );
+
+    req.log.info(`✅ ${transactionsCreated} Transactions created`);
+
+    return reply.status(201).send();
+  } catch (error) {
+    req.log.error(`❌ Error bulk creating transactions: ${error.message}`);
     throw error;
   }
 }
