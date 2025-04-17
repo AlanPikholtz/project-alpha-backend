@@ -3,7 +3,6 @@ import {
   fetchCountTransactions,
   fetchTransactionById,
   fetchTransactions,
-  fetchTransactionsByClientId,
   insertTransaction,
   putTransactionAndUpdateBalance,
 } from "./transactions.repository.js";
@@ -78,29 +77,10 @@ export async function bulkCreateTransactions(fastify, transactions, accountId) {
   return { affectedRows: affectedRows };
 }
 
-export async function getClientTransactions(fastify, clientId, from, to) {
-  const client = await fetchClientById(fastify, clientId);
-
-  if (!client)
-    throw {
-      isCustom: true,
-      statusCode: 404,
-      errorType: ERROR_TYPES.NOT_FOUND,
-      message: `No client found with id ${clientId}.`,
-    };
-
-  const transactions = await fetchTransactionsByClientId(
-    fastify,
-    clientId,
-    from,
-    to
-  );
-  return transactions;
-}
-
 export async function getTransactions(
   fastify,
   status,
+  clientId,
   limit,
   offset,
   page,
@@ -110,9 +90,22 @@ export async function getTransactions(
   sort,
   order
 ) {
+  if (clientId) {
+    const client = await fetchClientById(fastify, clientId);
+
+    if (!client)
+      throw {
+        isCustom: true,
+        statusCode: 404,
+        errorType: ERROR_TYPES.NOT_FOUND,
+        message: `No client found with id ${clientId}.`,
+      };
+  }
+
   const transactions = await fetchTransactions(
     fastify,
     status,
+    clientId,
     limit,
     offset,
     amount,
@@ -125,6 +118,7 @@ export async function getTransactions(
   const totalTransactions = await fetchCountTransactions(
     fastify,
     status,
+    clientId,
     amount,
     from,
     to

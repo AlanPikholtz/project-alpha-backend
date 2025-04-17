@@ -70,65 +70,6 @@ export const createTransactionSchema = {
   },
 };
 
-export const getClientTransactionsSchema = {
-  description: "Retrieve transactions of a client",
-  tags: ["Transactions"],
-  querystring: {
-    type: "object",
-    properties: {
-      from: {
-        type: "string",
-        format: "date-time",
-        description: "Start date for filtering transactions",
-        errorMessage: {
-          type: "Date must be a string.",
-          format: "Date must be an ISO 8601 date string.",
-        },
-      },
-      to: {
-        type: "string",
-        format: "date-time",
-        description: "End date for filtering transactions",
-        errorMessage: {
-          type: "Date must be a string.",
-          format: "Date must be an ISO 8601 date string.",
-        },
-      },
-    },
-  },
-  params: {
-    type: "object",
-    properties: {
-      clientId: {
-        type: "integer",
-        minimum: 1,
-        description: "Client ID",
-      },
-    },
-  },
-  response: {
-    200: {
-      description: "List of transactions",
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          id: { type: "integer" },
-          date: { type: "string", format: "date-time" },
-          type: { type: "string" },
-          amount: { type: "string" },
-          currency: { type: "string" },
-          clientId: { type: "integer" },
-          accountId: { type: "integer" },
-          commissionAmount: { type: "string" },
-          assignedAt: { type: "string", format: "date-time" },
-          createdAt: { type: "string", format: "date-time" },
-        },
-      },
-    },
-  },
-};
-
 export const getTransactionsSchema = {
   description: "Retrieve transactions",
   tags: ["Transactions"],
@@ -142,6 +83,15 @@ export const getTransactionsSchema = {
         errorMessage: {
           type: "Transaction status must be a string.",
           enum: "Transaction status must be [assigned] | [unassigned].",
+        },
+      },
+      clientId: {
+        type: "integer",
+        minimum: 1,
+        description: "Client ID",
+        errorMessage: {
+          type: "clientId must be a number.",
+          minimum: "clientId must be >= 1.",
         },
       },
       limit: {

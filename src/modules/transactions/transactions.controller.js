@@ -1,7 +1,6 @@
 import {
   bulkCreateTransactions,
   createTransaction,
-  getClientTransactions,
   getTransactions,
   updateTransaction,
 } from "./transactions.service.js";
@@ -56,37 +55,11 @@ export async function bulkCreateTransactionsHandler(req, reply) {
   }
 }
 
-export async function getClientTransactionsHandler(req, reply) {
-  try {
-    const { clientId } = req.params;
-
-    var { from, to } = req.query;
-
-    req.log.info(`📥 Fetching transactions for client ${clientId}`);
-
-    console.time(`⏱️ GET /transactions/client/${clientId} execution time`);
-    const transactions = await getClientTransactions(
-      req.server,
-      clientId,
-      from,
-      to
-    );
-    console.timeEnd(`⏱️ GET /transactions/client/${clientId} execution time`);
-
-    req.log.info(`✅ Retrieved ${transactions.length} transactions`);
-
-    const normalizedTransactions = normalizeResponse(transactions);
-    return reply.send(normalizedTransactions);
-  } catch (error) {
-    req.log.error(`❌ Error fetching transactions: ${error.message}`);
-    throw error;
-  }
-}
-
 export async function getTransactionsHandler(req, reply) {
   try {
     var {
       status,
+      clientId,
       limit = 10,
       page = 1,
       amount,
@@ -116,13 +89,14 @@ export async function getTransactionsHandler(req, reply) {
     }
 
     req.log.info(
-      `📥 Request received: GET /transactions?status=${status}&limit=${limit}&page=${page}&amount=${amount}&from=${from}&to=${to}&sort=${sort}&order=${order}`
+      `📥 Request received: GET /transactions?status=${status}&clientId=${clientId}&limit=${limit}&page=${page}&amount=${amount}&from=${from}&to=${to}&sort=${sort}&order=${order}`
     );
 
     console.time("⏱️ GET /transactions execution time");
     const transactions = await getTransactions(
       req.server,
       status,
+      clientId,
       limit,
       offset,
       page,

@@ -33,37 +33,6 @@ export async function bulkInsertTransactions(fastify, transactions, accountId) {
   return result.affectedRows;
 }
 
-export async function fetchTransactionsByClientId(fastify, clientId, from, to) {
-  let query = "SELECT * FROM transactions";
-  const params = [];
-  const conditions = [];
-
-  conditions.push("client_id = ?");
-  params.push(clientId);
-
-  if (from) {
-    conditions.push("date >= ?");
-    params.push(from);
-  }
-
-  if (to) {
-    conditions.push("date <= ?");
-    params.push(to);
-  }
-
-  if (conditions.length > 0) {
-    query += " WHERE " + conditions.join(" AND ");
-  }
-
-  query += ` ORDER BY assigned_at DESC`;
-
-  const [rows] = await fastify.mysql.execute(query, params);
-
-  const data = rows.map((row) => normalizeRow(row));
-
-  return data;
-}
-
 export async function fetchTransactionById(fastify, id) {
   const [rows] = await fastify.mysql.execute(
     "SELECT * FROM transactions WHERE id = ?",
@@ -78,6 +47,7 @@ export async function fetchTransactionById(fastify, id) {
 export async function fetchTransactions(
   fastify,
   status,
+  clientId,
   limit,
   offset,
   amount,
@@ -95,23 +65,26 @@ export async function fetchTransactions(
   const conditions = [];
   const params = [];
 
-  if (status === "assigned") {
-    conditions.push("client_id IS NOT NULL");
+  if (clientId) {
+    conditions.push("t.client_id = ?");
+    params.push(clientId);
+  } else if (status === "assigned") {
+    conditions.push("t.client_id IS NOT NULL");
   } else if (status === "unassigned") {
-    conditions.push("client_id IS NULL");
+    conditions.push("t.client_id IS NULL");
   }
 
   if (amount) {
-    conditions.push("amount = ?");
+    conditions.push("t.amount = ?");
     params.push(amount);
   }
 
   if (from) {
-    conditions.push("date >= ?");
+    conditions.push("t.date >= ?");
     params.push(from);
   }
   if (to) {
-    conditions.push("date <= ?");
+    conditions.push("t.date <= ?");
     params.push(to);
   }
 
@@ -144,6 +117,7 @@ export async function fetchTransactions(
 export async function fetchCountTransactions(
   fastify,
   status,
+  clientId,
   amount,
   from,
   to
@@ -152,7 +126,10 @@ export async function fetchCountTransactions(
   const conditions = [];
   const params = [];
 
-  if (status === "assigned") {
+  if (clientId) {
+    conditions.push("client_id = ?");
+    params.push(clientId);
+  } else if (status === "assigned") {
     conditions.push("client_id IS NOT NULL");
   } else if (status === "unassigned") {
     conditions.push("client_id IS NULL");
