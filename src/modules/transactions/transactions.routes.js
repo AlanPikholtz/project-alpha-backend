@@ -1,7 +1,6 @@
 import {
   bulkCreateTransactionsHandler,
   createTransactionHandler,
-  getClientTransactionsHandler,
   getTransactionsHandler,
   updateTransactionHandler,
 } from "./transactions.controller.js";
@@ -9,7 +8,6 @@ import {
 import {
   bulkCreateTransactionsSchema,
   createTransactionSchema,
-  getClientTransactionsSchema,
   getTransactionsSchema,
   updateTransactionSchema,
 } from "./transactions.schema.js";
@@ -31,15 +29,6 @@ export default async function transactionRoutes(fastify) {
       preValidation: [fastify.authenticate],
     },
     bulkCreateTransactionsHandler
-  );
-
-  fastify.get(
-    "/transactions/client/:clientId",
-    {
-      schema: getClientTransactionsSchema,
-      preValidation: [fastify.authenticate],
-    },
-    getClientTransactionsHandler
   );
 
   fastify.get(
