@@ -9,22 +9,22 @@ export const registerSchema = {
       username: {
         type: "string",
         errorMessage: {
-          type: "Username must be a string.",
+          type: "El nombre de usuario debe ser un string.",
         },
       },
       password: {
         type: "string",
         minLength: 8,
         errorMessage: {
-          type: "Password must be a string.",
-          minLength: "Password must be at least 8 characters long.",
+          type: "La contraseña debe ser un string.",
+          minLength: "La contraseña debe tener al menos 8 caracteres.",
         },
       },
     },
     errorMessage: {
       required: {
-        username: "Username is required.",
-        password: "Password is required.",
+        username: "El nombre de usuario es obligatorio.",
+        password: "La contraseña es obligatoria.",
       },
     },
   },
@@ -50,7 +50,7 @@ export const loginSchema = {
       username: {
         type: "string",
         errorMessage: {
-          type: "Username must be a string.",
+          type: "El nombre de usuario debe ser un string.",
         },
       },
       password: {
@@ -59,8 +59,8 @@ export const loginSchema = {
     },
     errorMessage: {
       required: {
-        username: "Username is required.",
-        password: "Password is required.",
+        username: "El nombre de usuario es obligatorio.",
+        password: "La contraseña es obligatoria.",
       },
     },
   },
@@ -86,13 +86,13 @@ export const refreshSchema = {
       refreshToken: {
         type: "string",
         errorMessage: {
-          type: "Refresh token must be a string.",
+          type: "El refresh token debe ser un string.",
         },
       },
     },
     errorMessage: {
       required: {
-        refreshToken: "Refresh token is required.",
+        refreshToken: "El refresh token es obligatorio.",
       },
     },
   },

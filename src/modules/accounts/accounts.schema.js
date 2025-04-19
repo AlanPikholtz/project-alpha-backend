@@ -55,15 +55,16 @@ export const createAccountSchema = {
         maxLength: 255,
         description: "Account's name",
         errorMessage: {
-          type: "Account name must be a string.",
-          minLength: "Account name must be at least 3 characters long.",
-          maxLength: "Account name cannot exceed 255 characters.",
+          type: "El nombre de la cuenta debe ser un string.",
+          minLength: "El nombre de la cuenta debe tener al menos 3 caracteres.",
+          maxLength:
+            "El nombre de la cuenta no puede exceder los 255 caracteres.",
         },
       },
     },
     errorMessage: {
       required: {
-        name: "Account name is required.",
+        name: "El nombre de la cuenta es obligatorio.",
       },
     },
   },
@@ -122,21 +123,22 @@ export const updateAccountSchema = {
         maxLength: 255,
         description: "Account's name",
         errorMessage: {
-          type: "Account name must be a string.",
-          minLength: "Account name must be at least 3 characters long.",
-          maxLength: "Account name cannot exceed 255 characters.",
+          type: "El nombre de la cuenta debe ser un string.",
+          minLength: "El nombre de la cuenta debe tener al menos 3 caracteres.",
+          maxLength:
+            "El nombre de la cuenta no puede exceder los 255 caracteres.",
         },
       },
     },
     errorMessage: {
       required: {
-        name: "Account name is required.",
+        name: "El nombre de la cuenta es obligatorio.",
       },
     },
   },
   response: {
     204: {
-      description: "Account updated successfully",
+      description: "La cuenta se actualizó correctamente",
     },
   },
 };
