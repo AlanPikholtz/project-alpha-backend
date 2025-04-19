@@ -19,7 +19,7 @@ export async function getAllClients(fastify, limit, offset, page, accountId) {
         isCustom: true,
         statusCode: 404,
         errorType: ERROR_TYPES.NOT_FOUND,
-        message: `No account found with id ${accountId}.`,
+        message: `No se encontró cuenta con id  ${accountId}.`,
       };
   }
 
@@ -44,7 +44,7 @@ export async function getClientById(fastify, id) {
       isCustom: true,
       statusCode: 404,
       errorType: ERROR_TYPES.NOT_FOUND,
-      message: `No client found with id ${id}.`,
+      message: `No se encontró cliente con id  ${id}.`,
     };
 
   return client;
@@ -67,7 +67,8 @@ export async function createClient(
       isCustom: true,
       statusCode: 400,
       errorType: ERROR_TYPES.DUPLICATE_ENTRY,
-      message: `This code is already registered. Please use a different code.`,
+      message:
+        "Este código ya está registrado. Por favor, utiliza un código diferente.",
     };
 
   const account = await fetchAccountById(fastify, accountId);
@@ -77,7 +78,7 @@ export async function createClient(
       isCustom: true,
       statusCode: 404,
       errorType: ERROR_TYPES.NOT_FOUND,
-      message: `No account found with id ${accountId}.`,
+      message: `No se encontró cuenta con id ${accountId}.`,
     };
 
   const result = await insertClient(
@@ -109,7 +110,7 @@ export async function updateClient(
       isCustom: true,
       statusCode: 404,
       errorType: ERROR_TYPES.NOT_FOUND,
-      message: `No client found with id ${clientId}.`,
+      message: `No se encontró cliente con id ${clientId}.`,
     };
 
   const account = await fetchAccountById(fastify, accountId);
@@ -119,7 +120,7 @@ export async function updateClient(
       isCustom: true,
       statusCode: 404,
       errorType: ERROR_TYPES.NOT_FOUND,
-      message: `No account found with id ${accountId}.`,
+      message: `No se encontró cuenta con id ${accountId}.`,
     };
 
   const succeeded = await putClient(
@@ -137,7 +138,7 @@ export async function updateClient(
       isCustom: true,
       statusCode: 500,
       errorType: ERROR_TYPES.INTERNAL_SERVER_ERROR,
-      message: `An error occurred while updating client ${clientId}.`,
+      message: `Ocurrió un error al actualizar el cliente ${clientId}.`,
     };
 
   return { succeeded: succeeded };

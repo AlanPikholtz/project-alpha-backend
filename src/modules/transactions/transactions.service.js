@@ -28,7 +28,7 @@ export async function createTransaction(
       isCustom: true,
       statusCode: 404,
       errorType: ERROR_TYPES.NOT_FOUND,
-      message: `No account found with id ${accountId}.`,
+      message: `No se encontró cuenta con id ${accountId}.`,
     };
 
   const formatedTransactonDate = DateTime.fromISO(date, { setZone: true })
@@ -54,7 +54,7 @@ export async function bulkCreateTransactions(fastify, transactions, accountId) {
       isCustom: true,
       statusCode: 404,
       errorType: ERROR_TYPES.NOT_FOUND,
-      message: `No account found with id ${accountId}.`,
+      message: `No se encontró cuenta con id ${accountId}.`,
     };
 
   const parsedTransactions = transactions.map((t) => {
@@ -98,7 +98,7 @@ export async function getTransactions(
         isCustom: true,
         statusCode: 404,
         errorType: ERROR_TYPES.NOT_FOUND,
-        message: `No client found with id ${clientId}.`,
+        message: `No se encontró cliente con id ${clientId}.`,
       };
   }
 
@@ -142,7 +142,7 @@ export async function updateTransaction(fastify, transactionId, clientId) {
       isCustom: true,
       statusCode: 404,
       errorType: ERROR_TYPES.NOT_FOUND,
-      message: `No transaction found with id ${transactionId}.`,
+      message: `No se encontró transacción con id ${transactionId}.`,
     };
 
   const client = await fetchClientById(fastify, clientId);
@@ -152,7 +152,7 @@ export async function updateTransaction(fastify, transactionId, clientId) {
       isCustom: true,
       statusCode: 404,
       errorType: ERROR_TYPES.NOT_FOUND,
-      message: `No client found with id ${clientId}.`,
+      message: `No se encontró cliente con id ${clientId}.`,
     };
 
   if (client.accountId !== transaction.accountId)
@@ -160,7 +160,7 @@ export async function updateTransaction(fastify, transactionId, clientId) {
       isCustom: true,
       statusCode: 400,
       errorType: ERROR_TYPES.BAD_REQUEST,
-      message: `Client ${client.id} does not belong to the account ${transaction.accountId}.`,
+      message: `El cliente ${client.id} no pertenece a la cuenta ${transaction.accountId}.`,
     };
 
   var oldClientBalance = null;
@@ -170,7 +170,7 @@ export async function updateTransaction(fastify, transactionId, clientId) {
         isCustom: true,
         statusCode: 400,
         errorType: ERROR_TYPES.DUPLICATE_ENTRY,
-        message: `Transaction already linked to client ${clientId}.`,
+        message: `La transacción ya se encuentra vinculada al cliente ${clientId}.`,
       };
     }
 
@@ -181,7 +181,7 @@ export async function updateTransaction(fastify, transactionId, clientId) {
         isCustom: true,
         statusCode: 404,
         errorType: ERROR_TYPES.NOT_FOUND,
-        message: `No client found with id ${transaction.clientId}.`,
+        message: `No se encontró cliente con id ${transaction.clientId}.`,
       };
 
     oldClientBalance = oldClient.balance.plus(transaction.amount).toString();
@@ -207,7 +207,7 @@ export async function updateTransaction(fastify, transactionId, clientId) {
       isCustom: true,
       statusCode: 500,
       errorType: ERROR_TYPES.INTERNAL_SERVER_ERROR,
-      message: `An error occurred while updating transaction ${transactionId}.`,
+      message: `Ocurrió un error al actualizar la transacción ${transactionId}.`,
     };
 
   return { succeeded: succeeded };

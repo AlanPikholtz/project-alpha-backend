@@ -10,8 +10,8 @@ export const createTransactionSchema = {
         format: "date-time",
         description: "DateTime of the transaction",
         errorMessage: {
-          type: "Date must be a string.",
-          format: "Date must be an ISO 8601 date string.",
+          type: "La fecha debe ser un string.",
+          format: "La fecha debe ser una cadena de fecha ISO 8601.",
         },
       },
       type: {
@@ -19,8 +19,8 @@ export const createTransactionSchema = {
         enum: ["deposit", "withdrawal", "exchange"],
         description: "Transaction type",
         errorMessage: {
-          type: "Transaction type must be a string.",
-          enum: "Transaction type must be [deposit] | [withdrawal] | [exchange].",
+          type: "El tipo de transacción debe ser un string.",
+          enum: "El tipo de transacción debe ser [deposit] | [withdrawal] | [exchange].",
         },
       },
       amount: {
@@ -28,8 +28,8 @@ export const createTransactionSchema = {
         minimum: 0.01,
         description: "Transaction amount",
         errorMessage: {
-          type: "Transaction amount must be a number.",
-          minimum: "Transaction amount must be >= 0.01.",
+          type: "La cantidad de la transacción debe ser un número.",
+          minimum: "La cantidad de la transacción debe ser >= 0.01.",
         },
       },
       currency: {
@@ -37,25 +37,25 @@ export const createTransactionSchema = {
         enum: ["ARS"],
         description: "Transaction currency",
         errorMessage: {
-          type: "Transaction currency must be a string.",
-          enum: "Transaction currency must be [ARS].",
+          type: "La moneda de la transacción debe ser un string.",
+          enum: "La moneda de la transacción debe ser [ARS].",
         },
       },
       accountId: {
         type: "integer",
         description: "Account ID",
         errorMessage: {
-          type: "Account ID must be an integer.",
+          type: "El ID de la cuenta debe ser un número entero.",
         },
       },
     },
     errorMessage: {
       required: {
-        date: "Date is required.",
-        type: "Type is required.",
-        amount: "Amount is required.",
-        currency: "Currency is required.",
-        accountId: "Account ID is required.",
+        date: "La fecha es obligatoria.",
+        type: "El tipo es obligatorio.",
+        amount: "La cantidad es obligatoria.",
+        currency: "La moneda es obligatoria.",
+        accountId: "El ID de la cuenta es obligatorio.",
       },
     },
   },
@@ -80,19 +80,11 @@ export const getTransactionsSchema = {
         type: "string",
         enum: ["assigned", "unassigned"],
         description: "Status of the transaction",
-        errorMessage: {
-          type: "Transaction status must be a string.",
-          enum: "Transaction status must be [assigned] | [unassigned].",
-        },
       },
       clientId: {
         type: "integer",
         minimum: 1,
         description: "Client ID",
-        errorMessage: {
-          type: "clientId must be a number.",
-          minimum: "clientId must be >= 1.",
-        },
       },
       limit: {
         type: "integer",
@@ -206,13 +198,13 @@ export const updateTransactionSchema = {
     },
     errorMessage: {
       required: {
-        clientId: "Client ID is required.",
+        clientId: "El ID del cliente es obligatorio.",
       },
     },
   },
   response: {
     204: {
-      description: "Transaction updated successfully",
+      description: "La transacción se actualizó correctamente",
     },
   },
 };
@@ -227,7 +219,7 @@ export const bulkCreateTransactionsSchema = {
         type: "integer",
         description: "Account ID",
         errorMessage: {
-          type: "Account ID must be an integer.",
+          type: "El ID de la cuenta debe ser un número entero.",
         },
       },
     },
@@ -243,8 +235,8 @@ export const bulkCreateTransactionsSchema = {
           format: "date-time",
           description: "DateTime of the transaction",
           errorMessage: {
-            type: "Date must be a string.",
-            format: "Date must be an ISO 8601 date string.",
+            type: "La fecha debe ser un string.",
+            format: "La fecha debe ser una cadena de fecha ISO 8601.",
           },
         },
         type: {
@@ -252,8 +244,8 @@ export const bulkCreateTransactionsSchema = {
           enum: ["deposit", "withdrawal", "exchange"],
           description: "Transaction type",
           errorMessage: {
-            type: "Transaction type must be a string.",
-            enum: "Transaction type must be [deposit] | [withdrawal] | [exchange].",
+            type: "El tipo de transacción debe ser un string.",
+            enum: "El tipo de transacción debe ser [deposit] | [withdrawal] | [exchange].",
           },
         },
         amount: {
@@ -261,8 +253,8 @@ export const bulkCreateTransactionsSchema = {
           minimum: 0.01,
           description: "Transaction amount",
           errorMessage: {
-            type: "Transaction amount must be a number.",
-            minimum: "Transaction amount must be >= 0.01.",
+            type: "La cantidad de la transacción debe ser un número.",
+            minimum: "La cantidad de la transacción debe ser >= 0.01.",
           },
         },
         currency: {
@@ -270,24 +262,24 @@ export const bulkCreateTransactionsSchema = {
           enum: ["ARS"],
           description: "Transaction currency",
           errorMessage: {
-            type: "Transaction currency must be a string.",
-            enum: "Transaction currency must be [ARS].",
+            type: "La moneda de la transacción debe ser un string.",
+            enum: "La moneda de la transacción debe ser [ARS].",
           },
         },
       },
       errorMessage: {
         required: {
-          date: "Date is required.",
-          type: "Type is required.",
-          amount: "Amount is required.",
-          currency: "Currency is required.",
+          date: "La fecha es obligatoria.",
+          type: "El tipo es obligatorio.",
+          amount: "La cantidad es obligatoria.",
+          currency: "La moneda es obligatoria.",
         },
       },
     },
   },
   response: {
     201: {
-      description: "Transaction created successfully",
+      description: "Transacciones creadas correctamente",
       type: "object",
       properties: {
         id: { type: "integer" },

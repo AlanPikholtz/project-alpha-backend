@@ -118,9 +118,9 @@ export const createClientSchema = {
         maxLength: 100,
         description: "First name",
         errorMessage: {
-          type: "First name must be a string.",
-          minLength: "First name must be at least 3 characters long.",
-          maxLength: "First name cannot exceed 100 characters.",
+          type: "El nombre debe ser un string.",
+          minLength: "El nombre debe tener al menos 3 caracteres.",
+          maxLength: "El nombre no puede exceder los 100 caracteres.",
         },
       },
       lastName: {
@@ -129,9 +129,9 @@ export const createClientSchema = {
         maxLength: 100,
         description: "Last name",
         errorMessage: {
-          type: "Last name must be a string.",
-          minLength: "Last name must be at least 3 characters long.",
-          maxLength: "Last name cannot exceed 100 characters.",
+          type: "El apellido debe ser un string.",
+          minLength: "El apellido debe tener al menos 3 caracteres.",
+          maxLength: "El apellido no puede exceder los 100 caracteres.",
         },
       },
       code: {
@@ -140,9 +140,9 @@ export const createClientSchema = {
         maxLength: 50,
         description: "Code",
         errorMessage: {
-          type: "Code must be a string.",
-          minLength: "Code must be at least 3 characters long.",
-          maxLength: "Code cannot exceed 50 characters.",
+          type: "El código debe ser un string.",
+          minLength: "El código debe tener al menos 3 caracteres.",
+          maxLength: "El código no puede exceder los 50 caracteres.",
         },
       },
       balance: {
@@ -150,7 +150,7 @@ export const createClientSchema = {
         default: 0.0,
         description: "Balance",
         errorMessage: {
-          type: "Balance must be a number.",
+          type: "El balance debe ser un número.",
         },
       },
       commission: {
@@ -159,31 +159,31 @@ export const createClientSchema = {
         default: 0.0,
         description: "Commission",
         errorMessage: {
-          type: "Commission must be a number.",
-          minimum: "Commission must be >= 0.",
+          type: "La comisión debe ser un número.",
+          minimum: "La comisión debe ser >= 0.",
         },
       },
       notes: {
         type: "string",
         description: "Notes",
         errorMessage: {
-          type: "Notes must be a string.",
+          type: "Las notas deben ser un string.",
         },
       },
       accountId: {
         type: "integer",
         description: "Account ID",
         errorMessage: {
-          type: "Account ID must be an integer.",
+          type: "El ID de la cuenta debe ser un número entero.",
         },
       },
     },
     errorMessage: {
       required: {
-        firstName: "First name is required.",
-        lastName: "Last name is required.",
-        code: "Code is required.",
-        accountId: "AccountId is required.",
+        firstName: "El nombre es obligatorio.",
+        lastName: "El apellido es obligatorio.",
+        code: "El código es obligatorio.",
+        accountId: "El ID de la cuenta es obligatorio.",
       },
     },
   },
@@ -248,9 +248,9 @@ export const updateClientSchema = {
         maxLength: 100,
         description: "First name",
         errorMessage: {
-          type: "First name must be a string.",
-          minLength: "First name must be at least 3 characters long.",
-          maxLength: "First name cannot exceed 100 characters.",
+          type: "El nombre debe ser un string.",
+          minLength: "El nombre debe tener al menos 3 caracteres.",
+          maxLength: "El nombre no puede exceder los 100 caracteres.",
         },
       },
       lastName: {
@@ -259,9 +259,9 @@ export const updateClientSchema = {
         maxLength: 100,
         description: "Last name",
         errorMessage: {
-          type: "Last name must be a string.",
-          minLength: "Last name must be at least 3 characters long.",
-          maxLength: "Last name cannot exceed 100 characters.",
+          type: "El apellido debe ser un string.",
+          minLength: "El apellido debe tener al menos 3 caracteres.",
+          maxLength: "El apellido no puede exceder los 100 caracteres.",
         },
       },
       commission: {
@@ -270,38 +270,38 @@ export const updateClientSchema = {
         default: 0.0,
         description: "Commission",
         errorMessage: {
-          type: "Commission must be a number.",
-          minimum: "Commission must be >= 0.",
+          type: "La comisión debe ser un número.",
+          minimum: "La comisión debe ser >= 0.",
         },
       },
       notes: {
         type: "string",
         description: "Notes",
         errorMessage: {
-          type: "Notes must be a string.",
+          type: "Las notas deben ser un string.",
         },
       },
       accountId: {
         type: "integer",
         description: "Account ID",
         errorMessage: {
-          type: "Account ID must be an integer.",
+          type: "El ID de la cuenta debe ser un número entero.",
         },
       },
     },
     errorMessage: {
       required: {
-        firstName: "First name is required.",
-        lastName: "Last name is required.",
-        commission: "Commission is required.",
-        notes: "Notes is required.",
-        accountId: "AccountId is required.",
+        firstName: "El nombre es obligatorio.",
+        lastName: "El apellido es obligatorio.",
+        commission: "La comisión es obligatoria.",
+        notes: "Las notas son obligatorias.",
+        accountId: "El ID de la cuenta es obligatorio.",
       },
     },
   },
   response: {
     204: {
-      description: "Client updated successfully",
+      description: "El cliente se actualizó correctamente",
     },
   },
 };

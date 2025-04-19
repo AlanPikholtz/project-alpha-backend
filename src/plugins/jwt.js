@@ -15,7 +15,7 @@ export default fp(async (fastify) => {
         isCustom: true,
         statusCode: 401,
         errorType: ERROR_TYPES.UNAUTHORIZED,
-        message: "Invalid or missing token.",
+        message: "Token incorrecto o no existente.",
       };
     }
   });

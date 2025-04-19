@@ -30,7 +30,7 @@ export async function getAccountById(fastify, id) {
       isCustom: true,
       statusCode: 404,
       errorType: ERROR_TYPES.NOT_FOUND,
-      message: `No account found with id ${id}.`,
+      message: `No se encontró cuenta con id ${id}.`,
     };
 
   return account;
@@ -49,7 +49,7 @@ export async function updateAccount(fastify, accountId, name) {
       isCustom: true,
       statusCode: 404,
       errorType: ERROR_TYPES.NOT_FOUND,
-      message: `No account found with id ${accountId}.`,
+      message: `No se encontró cuenta con id ${accountId}.`,
     };
 
   const succeeded = await putAccount(fastify, accountId, name);
@@ -59,7 +59,7 @@ export async function updateAccount(fastify, accountId, name) {
       isCustom: true,
       statusCode: 500,
       errorType: ERROR_TYPES.INTERNAL_SERVER_ERROR,
-      message: `An error occurred while updating account ${accountId}.`,
+      message: `Ocurrió un error al actualizar la cuenta ${accountId}.`,
     };
 
   return { succeeded: succeeded };

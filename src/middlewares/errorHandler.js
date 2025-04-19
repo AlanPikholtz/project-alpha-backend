@@ -16,8 +16,10 @@ export default function errorHandler(error, req, reply) {
   } else {
     statusCode = 500;
     errorType = ERROR_TYPES.INTERNAL_SERVER_ERROR;
-    messages = ["An unexpected error occurred. Please try again later."];
-    console.error("❌ Unexpected Error:", error); // Log detallado en consola
+    messages = [
+      "Ocurrió un error inesperado. Por favor, inténtalo de nuevo más tarde.",
+    ];
+    console.error("❌ Error inesperado:", error);
   }
 
   return reply.status(statusCode).send({
