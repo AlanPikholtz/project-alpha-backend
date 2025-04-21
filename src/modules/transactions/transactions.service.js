@@ -184,13 +184,21 @@ export async function updateTransaction(fastify, transactionId, clientId) {
         message: `No se encontró cliente con id ${transaction.clientId}.`,
       };
 
-    oldClientBalance = oldClient.balance.plus(transaction.amount).toString();
-  }
+    const amountWithoutCommission = transaction.amount.minus(
+      transaction.commissionAmount
+    );
 
-  const updatedBalance = client.balance.minus(transaction.amount).toString();
+    oldClientBalance = oldClient.balance
+      .plus(amountWithoutCommission)
+      .toString();
+  }
 
   const commissionRate = client.commission.dividedBy(100);
   const commissionAmount = transaction.amount.times(commissionRate).toString();
+  const amountWithoutCommission = transaction.amount.minus(commissionAmount);
+  const updatedBalance = client.balance
+    .minus(amountWithoutCommission)
+    .toString();
 
   const succeeded = await putTransactionAndUpdateBalance(
     fastify,
