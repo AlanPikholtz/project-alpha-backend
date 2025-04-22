@@ -6,6 +6,7 @@ export async function fetchMetrics(fastify) {
     [commissionsPerClient],
     [[{ totalDeposits }]],
     [[{ totalCommissions }]],
+    [[{ unassignedDeposits }]],
   ] = await Promise.all([
     fastify.mysql.query("SELECT COUNT(*) AS totalClients FROM clients"),
 
@@ -54,6 +55,12 @@ export async function fetchMetrics(fastify) {
       FROM transactions
       WHERE type = 'deposit'
     `),
+
+    fastify.mysql.query(`
+      SELECT COUNT(*) AS unassignedDeposits
+      FROM transactions
+      WHERE type = 'deposit' AND client_id IS NULL;
+    `),
   ]);
 
   return {
@@ -63,5 +70,6 @@ export async function fetchMetrics(fastify) {
     commissionsPerClient,
     totalDeposits,
     totalCommissions,
+    unassignedDeposits,
   };
 }

@@ -81,6 +81,10 @@ export const getMetricsSchema = {
           type: "integer",
           description: "Total commissions from deposits",
         },
+        unassignedDeposits: {
+          type: "integer",
+          description: "Total unassigned deposits",
+        },
       },
     },
   },

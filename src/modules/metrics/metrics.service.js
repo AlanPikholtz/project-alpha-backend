@@ -10,6 +10,7 @@ export async function getMetrics(mysql) {
     commissionsPerClient,
     totalDeposits,
     totalCommissions,
+    unassignedDeposits,
   } = await fetchMetrics(mysql);
 
   return normalizeResponse({
@@ -25,5 +26,6 @@ export async function getMetrics(mysql) {
     })),
     totalDeposits: new Decimal(totalDeposits),
     totalCommissions: new Decimal(totalCommissions),
+    unassignedDeposits: new Decimal(unassignedDeposits),
   });
 }
