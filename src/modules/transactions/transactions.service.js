@@ -115,6 +115,13 @@ export async function getTransactions(
     order
   );
 
+  const mappedTransactions = transactions.map((transaction) => ({
+    ...transaction,
+    clientAmount: transaction.commissionAmount
+      ? transaction.amount.minus(transaction.commissionAmount)
+      : null,
+  }));
+
   const totalTransactions = await fetchCountTransactions(
     fastify,
     status,
@@ -126,7 +133,7 @@ export async function getTransactions(
   const totalPages = !limit ? 1 : Math.ceil(totalTransactions / limit);
 
   return {
-    data: transactions,
+    data: mappedTransactions,
     total: totalTransactions,
     page: page,
     pages: totalPages,
