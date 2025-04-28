@@ -182,10 +182,22 @@ export async function putTransactionAndUpdateBalance(
       clientId,
     ]);
 
-    await conn.query("UPDATE clients SET balance = ? WHERE id = ?", [
-      oldClientBalance,
-      oldClientId,
-    ]);
+    await conn.query(
+      "INSERT INTO client_balance_history (client_id, balance) VALUES (?, ?)",
+      [clientId, clientBalance]
+    );
+
+    if (oldClientId) {
+      await conn.query("UPDATE clients SET balance = ? WHERE id = ?", [
+        oldClientBalance,
+        oldClientId,
+      ]);
+
+      await conn.query(
+        "INSERT INTO client_balance_history (client_id, balance) VALUES (?, ?)",
+        [oldClientId, oldClientBalance]
+      );
+    }
 
     await conn.commit();
     conn.release();
