@@ -1,4 +1,4 @@
-export async function fetchMetrics(fastify) {
+export async function fetchMetrics(fastify, start, end) {
   const [
     [[{ totalClients }]],
     [clientsPerAccount],
@@ -20,7 +20,8 @@ export async function fetchMetrics(fastify) {
       GROUP BY a.id, a.name
     `),
 
-    fastify.mysql.query(`
+    fastify.mysql.query(
+      `
       SELECT 
         c.id AS clientId,
         CONCAT(c.first_name, ' ', c.last_name) AS clientFullName,
@@ -29,10 +30,14 @@ export async function fetchMetrics(fastify) {
       JOIN clients c ON t.client_id = c.id
       WHERE t.type = 'deposit'
         AND t.client_id IS NOT NULL
+        AND t.date BETWEEN ? AND ?
       GROUP BY c.id, c.first_name
-    `),
+    `,
+      [start, end]
+    ),
 
-    fastify.mysql.query(`
+    fastify.mysql.query(
+      `
       SELECT 
         c.id AS clientId,
         CONCAT(c.first_name, ' ', c.last_name) AS clientFullName,
@@ -41,26 +46,41 @@ export async function fetchMetrics(fastify) {
       JOIN clients c ON t.client_id = c.id
       WHERE t.type = 'deposit'
         AND t.client_id IS NOT NULL
+        AND t.date BETWEEN ? AND ?
       GROUP BY c.id, c.first_name
-    `),
+    `,
+      [start, end]
+    ),
 
-    fastify.mysql.query(`
+    fastify.mysql.query(
+      `
       SELECT SUM(amount) AS totalDeposits
       FROM transactions
       WHERE type = 'deposit'
-    `),
+      AND date BETWEEN ? AND ?
+    `,
+      [start, end]
+    ),
 
-    fastify.mysql.query(`
+    fastify.mysql.query(
+      `
       SELECT SUM(commission_amount) AS totalCommissions
       FROM transactions
       WHERE type = 'deposit'
-    `),
+      AND date BETWEEN ? AND ?
+    `,
+      [start, end]
+    ),
 
-    fastify.mysql.query(`
+    fastify.mysql.query(
+      `
       SELECT COUNT(*) AS unassignedDeposits
       FROM transactions
-      WHERE type = 'deposit' AND client_id IS NULL;
-    `),
+      WHERE type = 'deposit' AND client_id IS NULL
+      AND date BETWEEN ? AND ?;
+    `,
+      [start, end]
+    ),
   ]);
 
   return {

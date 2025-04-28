@@ -1,6 +1,13 @@
 export const getMetricsSchema = {
   description: "Retrieve metrics",
   tags: ["Metrics"],
+  querystring: {
+    type: "object",
+    required: ["date"],
+    properties: {
+      date: { type: "string", format: "date" },
+    },
+  },
   response: {
     200: {
       description: "Metrics retrieved successfully",
@@ -46,7 +53,7 @@ export const getMetricsSchema = {
                 description: "Client name",
               },
               totalDeposits: {
-                type: "integer",
+                type: ["string", "null"],
                 description: "Total deposits for the client",
               },
             },
@@ -67,22 +74,22 @@ export const getMetricsSchema = {
                 description: "Client name",
               },
               totalCommissions: {
-                type: "integer",
+                type: ["string", "null"],
                 description: "Total commissions from the client",
               },
             },
           },
         },
         totalDeposits: {
-          type: "integer",
+          type: ["string", "null"],
           description: "Total deposits",
         },
         totalCommissions: {
-          type: "integer",
+          type: ["string", "null"],
           description: "Total commissions from deposits",
         },
         unassignedDeposits: {
-          type: "integer",
+          type: ["string", "null"],
           description: "Total unassigned deposits",
         },
       },
