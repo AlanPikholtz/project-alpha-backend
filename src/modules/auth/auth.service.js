@@ -53,16 +53,28 @@ export async function loginUser(fastify, username, password) {
 }
 
 export async function refreshTokens(fastify, token) {
-  const decoded = fastify.jwt.verify(token);
-  if (!decoded.id)
+  var userId = null;
+  try {
+    const decoded = fastify.jwt.verify(token);
+    if (!decoded.id)
+      throw {
+        isCustom: true,
+        statusCode: 401,
+        errorType: ERROR_TYPES.UNAUTHORIZED,
+        message: "Token inválido.",
+      };
+
+    userId = decoded.id;
+  } catch (error) {
     throw {
       isCustom: true,
       statusCode: 401,
       errorType: ERROR_TYPES.UNAUTHORIZED,
-      message: "Token inválido.",
+      message: "Token incorrecto o no existente.",
     };
+  }
 
-  const user = await fetchUserById(fastify, decoded.id);
+  const user = await fetchUserById(fastify, userId);
   if (!user)
     throw {
       isCustom: true,
