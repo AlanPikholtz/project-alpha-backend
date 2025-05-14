@@ -177,29 +177,40 @@ export const getTransactionsSchema = {
   },
 };
 
-export const updateTransactionSchema = {
-  description: "Update a transaction",
+export const assignTransactionsSchema = {
+  description: "Assign transactions",
   tags: ["Transactions"],
   params: {
     type: "object",
-    required: ["id"],
     properties: {
-      id: { type: "integer", minimum: 1, description: "Transaction ID" },
+      clientId: {
+        type: "integer",
+        description: "Client ID",
+        errorMessage: {
+          type: "El ID del cliente debe ser un número entero.",
+        },
+      },
     },
   },
   body: {
     type: "object",
-    required: ["clientId"],
+    required: ["transactionIds"],
     properties: {
-      clientId: {
-        type: "integer",
-        minimum: 1,
-        description: "Client ID",
+      transactionIds: {
+        type: "array",
+        items: { type: "integer" },
+        minItems: 1,
+        uniqueItems: true,
+        errorMessage: {
+          type: "transactionIds debe ser un array.",
+          minItems: "transactionIds debe tener al menos un elemento.",
+          uniqueItems: "transactionIds no puede tener elementos duplicados.",
+        },
       },
     },
     errorMessage: {
       required: {
-        clientId: "El ID del cliente es obligatorio.",
+        transactionIds: "transactionIds es obligatorio.",
       },
     },
   },
