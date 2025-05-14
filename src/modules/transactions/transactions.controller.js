@@ -1,8 +1,8 @@
 import {
+  assignTransactions,
   bulkCreateTransactions,
   createTransaction,
   getTransactions,
-  updateTransaction,
 } from "./transactions.service.js";
 
 import { DateTime } from "luxon";
@@ -119,21 +119,25 @@ export async function getTransactionsHandler(req, reply) {
   }
 }
 
-export async function updateTransactionHandler(req, reply) {
+export async function assignTransactionsHandler(req, reply) {
   try {
-    const { id } = req.params;
+    const { clientId } = req.params;
 
-    const { clientId } = req.body;
+    const { transactionIds } = req.body;
 
-    req.log.info(`📥 Updating transaction ${id}`);
+    req.log.info(
+      `📥 Assigning transactions ${transactionIds} to client ${clientId}`
+    );
 
-    await updateTransaction(req.server, id, clientId);
+    await assignTransactions(req.server, transactionIds, clientId);
 
-    req.log.info(`✅ Transaction updated successfully - Client id: ${id}`);
+    req.log.info(
+      `✅ Transaction assigned successfully - Client id: ${clientId}`
+    );
 
     return reply.status(204).send();
   } catch (error) {
-    req.log.error(`❌ Error updating transaction: ${error.message}`);
+    req.log.error(`❌ Error assigning transactions: ${error.message}`);
     throw error;
   }
 }

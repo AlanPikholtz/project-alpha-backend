@@ -1,5 +1,17 @@
 import { normalizeRow } from "../../utils/db.js";
 
+export async function fetchTransactionsByIds(fastify, transactionIds) {
+  const placeholders = transactionIds.map(() => "?").join(",");
+
+  const [rows] = await fastify.mysql.query(
+    `SELECT * FROM transactions WHERE id IN (${placeholders})`,
+    transactionIds
+  );
+
+  const data = rows.map((row) => normalizeRow(row));
+  return data;
+}
+
 export async function insertTransaction(
   fastify,
   date,
@@ -158,44 +170,46 @@ export async function fetchCountTransactions(
   return rows[0].total;
 }
 
-export async function putTransactionAndUpdateBalance(
+export async function putTransactionsAndUpdateBalance(
   fastify,
-  transactionId,
+  transactions,
   clientId,
-  clientBalance,
-  commissionAmount,
-  oldClientId,
-  oldClientBalance
+  newClientBalance,
+  amountByPreviousClient
 ) {
   const conn = await fastify.mysql.getConnection();
 
   try {
     await conn.beginTransaction();
 
-    await conn.query(
-      "UPDATE transactions SET client_id = ?, commission_amount = ?, assigned_at = UTC_TIMESTAMP() WHERE id = ?",
-      [clientId, commissionAmount, transactionId]
-    );
+    transactions.forEach(async (t) => {
+      await conn.query(
+        "UPDATE transactions SET client_id = ?, commission_amount = ?, assigned_at = UTC_TIMESTAMP() WHERE id = ?",
+        [clientId, t.commissionAmount, t.id]
+      );
+    });
 
     await conn.query("UPDATE clients SET balance = ? WHERE id = ?", [
-      clientBalance,
+      newClientBalance,
       clientId,
     ]);
 
     await conn.query(
       "INSERT INTO client_balance_history (client_id, balance) VALUES (?, ?)",
-      [clientId, clientBalance]
+      [clientId, newClientBalance]
     );
 
-    if (oldClientId) {
+    for (const [oldClientId, oldClientBalance] of Object.entries(
+      amountByPreviousClient
+    )) {
       await conn.query("UPDATE clients SET balance = ? WHERE id = ?", [
-        oldClientBalance,
+        oldClientBalance.toString(),
         oldClientId,
       ]);
 
       await conn.query(
         "INSERT INTO client_balance_history (client_id, balance) VALUES (?, ?)",
-        [oldClientId, oldClientBalance]
+        [oldClientId, oldClientBalance.toString()]
       );
     }
 

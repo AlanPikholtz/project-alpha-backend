@@ -1,14 +1,15 @@
 import {
   bulkInsertTransactions,
   fetchCountTransactions,
-  fetchTransactionById,
   fetchTransactions,
+  fetchTransactionsByIds,
   insertTransaction,
-  putTransactionAndUpdateBalance,
+  putTransactionsAndUpdateBalance,
 } from "./transactions.repository.js";
 
 import { fetchAccountById } from "../accounts/accounts.repository.js";
 
+import Decimal from "decimal.js";
 import { DateTime } from "luxon";
 import { ERROR_TYPES } from "../../constants/errorTypes.js";
 import { fetchClientById } from "../clients/clients.repository.js";
@@ -141,15 +142,15 @@ export async function getTransactions(
   };
 }
 
-export async function updateTransaction(fastify, transactionId, clientId) {
-  const transaction = await fetchTransactionById(fastify, transactionId);
+export async function assignTransactions(fastify, transactionIds, clientId) {
+  const transactions = await fetchTransactionsByIds(fastify, transactionIds);
 
-  if (!transaction)
+  if (transactions.length !== transactionIds.length)
     throw {
       isCustom: true,
       statusCode: 404,
       errorType: ERROR_TYPES.NOT_FOUND,
-      message: `No se encontró transacción con id ${transactionId}.`,
+      message: `No se encontraron todas las transacciones.`,
     };
 
   const client = await fetchClientById(fastify, clientId);
@@ -162,59 +163,85 @@ export async function updateTransaction(fastify, transactionId, clientId) {
       message: `No se encontró cliente con id ${clientId}.`,
     };
 
-  if (client.accountId !== transaction.accountId)
+  const accountIds = [...new Set(transactions.map((t) => t.accountId))];
+  if (accountIds.length > 1)
     throw {
       isCustom: true,
       statusCode: 400,
       errorType: ERROR_TYPES.BAD_REQUEST,
-      message: `El cliente ${client.id} no pertenece a la cuenta ${transaction.accountId}.`,
+      message: `No se pueden asignar transacciones pertenecientes a diferentes cuentas.`,
     };
 
-  var oldClientBalance = null;
-  if (transaction.clientId) {
-    if (transaction.clientId === clientId) {
-      throw {
-        isCustom: true,
-        statusCode: 400,
-        errorType: ERROR_TYPES.DUPLICATE_ENTRY,
-        message: `La transacción ya se encuentra vinculada al cliente ${clientId}.`,
-      };
-    }
+  if (accountIds[0] !== client.accountId)
+    throw {
+      isCustom: true,
+      statusCode: 400,
+      errorType: ERROR_TYPES.BAD_REQUEST,
+      message: `El cliente ${client.id} no pertenece a la cuenta ${accountIds[0]}.`,
+    };
 
-    const oldClient = await fetchClientById(fastify, transaction.clientId);
+  const isAnyAlreadyAssignedToClient = transactions.some(
+    (t) => t.clientId === clientId
+  );
 
-    if (!oldClient)
-      throw {
-        isCustom: true,
-        statusCode: 404,
-        errorType: ERROR_TYPES.NOT_FOUND,
-        message: `No se encontró cliente con id ${transaction.clientId}.`,
-      };
-
-    const amountWithoutCommission = transaction.amount.minus(
-      transaction.commissionAmount
-    );
-
-    oldClientBalance = oldClient.balance
-      .plus(amountWithoutCommission)
-      .toString();
+  if (isAnyAlreadyAssignedToClient) {
+    throw {
+      isCustom: true,
+      statusCode: 400,
+      errorType: ERROR_TYPES.DUPLICATE_ENTRY,
+      message: `Una o más transacciones ya se encuentran vinculadas al cliente ${clientId}.`,
+    };
   }
 
-  const commissionRate = client.commission.dividedBy(100);
-  const commissionAmount = transaction.amount.times(commissionRate).toString();
-  const amountWithoutCommission = transaction.amount.minus(commissionAmount);
-  const updatedBalance = client.balance
-    .minus(amountWithoutCommission)
-    .toString();
+  const amountByPreviousClient = {};
 
-  const succeeded = await putTransactionAndUpdateBalance(
+  const clientCommissionRate = client.commission.dividedBy(100);
+
+  for (const transaction of transactions) {
+    if (transaction.clientId) {
+      const oldClient = await fetchClientById(fastify, transaction.clientId);
+
+      if (!oldClient) {
+        throw {
+          isCustom: true,
+          statusCode: 404,
+          errorType: ERROR_TYPES.NOT_FOUND,
+          message: `No se encontró cliente con id ${transaction.clientId}.`,
+        };
+      }
+
+      if (!amountByPreviousClient[transaction.clientId]) {
+        amountByPreviousClient[transaction.clientId] = oldClient.balance;
+      }
+
+      const amountWithoutCommission = transaction.amount.minus(
+        transaction.commissionAmount
+      );
+
+      amountByPreviousClient[transaction.clientId] = amountByPreviousClient[
+        transaction.clientId
+      ].plus(amountWithoutCommission);
+    }
+
+    const transactionCommissionAmount = transaction.amount
+      .times(clientCommissionRate)
+      .toString();
+    const transactionAmountWithoutCommission = transaction.amount.minus(
+      transactionCommissionAmount
+    );
+    client.balance = client.balance.minus(transactionAmountWithoutCommission);
+
+    transaction.commissionAmount = transactionCommissionAmount;
+  }
+
+  const balance = new Decimal(client.balance).toString();
+
+  const succeeded = await putTransactionsAndUpdateBalance(
     fastify,
-    transactionId,
+    transactions,
     client.id,
-    updatedBalance,
-    commissionAmount,
-    transaction.clientId ?? null,
-    oldClientBalance
+    balance,
+    amountByPreviousClient
   );
 
   if (!succeeded)

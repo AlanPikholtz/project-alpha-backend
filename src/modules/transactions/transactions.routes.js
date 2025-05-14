@@ -1,15 +1,15 @@
 import {
+  assignTransactionsHandler,
   bulkCreateTransactionsHandler,
   createTransactionHandler,
   getTransactionsHandler,
-  updateTransactionHandler,
 } from "./transactions.controller.js";
 
 import {
+  assignTransactionsSchema,
   bulkCreateTransactionsSchema,
   createTransactionSchema,
   getTransactionsSchema,
-  updateTransactionSchema,
 } from "./transactions.schema.js";
 
 export default async function transactionRoutes(fastify) {
@@ -41,11 +41,11 @@ export default async function transactionRoutes(fastify) {
   );
 
   fastify.put(
-    "/transactions/:id",
+    "/transactions/client/:clientId",
     {
-      schema: updateTransactionSchema,
+      schema: assignTransactionsSchema,
       preValidation: [fastify.authenticate],
     },
-    updateTransactionHandler
+    assignTransactionsHandler
   );
 }
