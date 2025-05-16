@@ -16,7 +16,8 @@ export async function insertPayment(
 }
 
 export async function fetchPayments(fastify, limit, offset) {
-  let query = "SELECT * FROM payments ORDER BY payment_request_date DESC";
+  let query =
+    "SELECT p.*, c.code as client_code FROM payments p JOIN clients c ON p.client_id = c.id ORDER BY payment_request_date DESC";
 
   if (limit !== null) {
     query += ` LIMIT ${limit} OFFSET ${offset}`;

@@ -32,6 +32,7 @@ export const getAllPaymentsSchema = {
               currency: { type: "string" },
               method: { type: "string" },
               clientId: { type: "integer" },
+              clientCode: { type: "string" },
               createdAt: { type: "string", format: "date-time" },
             },
           },
