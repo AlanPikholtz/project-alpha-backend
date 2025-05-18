@@ -60,6 +60,7 @@ export async function fetchTransactions(
   fastify,
   status,
   clientId,
+  accountId,
   limit,
   offset,
   amount,
@@ -76,6 +77,11 @@ export async function fetchTransactions(
     LEFT JOIN clients c ON t.client_id = c.id`;
   const conditions = [];
   const params = [];
+
+  if (accountId) {
+    conditions.push("t.account_id = ?");
+    params.push(accountId);
+  }
 
   if (clientId) {
     conditions.push("t.client_id = ?");

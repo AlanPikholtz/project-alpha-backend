@@ -86,6 +86,11 @@ export const getTransactionsSchema = {
         minimum: 1,
         description: "Client ID",
       },
+      accountId: {
+        type: "integer",
+        minimum: 1,
+        description: "Account ID",
+      },
       limit: {
         type: "integer",
         minimum: 0,

@@ -82,6 +82,7 @@ export async function getTransactions(
   fastify,
   status,
   clientId,
+  accountId,
   limit,
   offset,
   page,
@@ -103,10 +104,23 @@ export async function getTransactions(
       };
   }
 
+  if (accountId) {
+    const account = await fetchAccountById(fastify, accountId);
+
+    if (!account)
+      throw {
+        isCustom: true,
+        statusCode: 404,
+        errorType: ERROR_TYPES.NOT_FOUND,
+        message: `No se encontró cuenta con id ${accountId}.`,
+      };
+  }
+
   const transactions = await fetchTransactions(
     fastify,
     status,
     clientId,
+    accountId,
     limit,
     offset,
     amount,
