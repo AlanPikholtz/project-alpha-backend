@@ -5,10 +5,9 @@ import {
   updateClient,
 } from "./clients.service.js";
 
-export async function getClientsByAccountHandler(req, reply) {
+export async function getAllClientsHandler(req, reply) {
   try {
-    const { accountId } = req.params;
-    var { limit = 10, page = 1 } = req.query;
+    var { limit = 10, page = 1, accountId } = req.query;
     const offset = (page - 1) * limit;
 
     if (limit === 0) {
@@ -16,10 +15,10 @@ export async function getClientsByAccountHandler(req, reply) {
     }
 
     req.log.info(
-      `📥 Request received: GET /clients/account/${accountId}?limit=${limit}&page=${page}`
+      `📥 Request received: GET /clients?limit=${limit}&page=${page}&accountId=${accountId}`
     );
 
-    console.time(`⏱️ GET /clients/account/${accountId} execution time`);
+    console.time("⏱️ GET /clients execution time");
     const clients = await getAllClients(
       req.server,
       limit,
@@ -27,32 +26,6 @@ export async function getClientsByAccountHandler(req, reply) {
       page,
       accountId
     );
-    console.timeEnd(`⏱️ GET /clients/account/${accountId} execution time`);
-
-    req.log.info(`✅ Clients retrieved: ${clients.length} records found`);
-
-    return reply.send(clients);
-  } catch (error) {
-    req.log.error(`❌ Error retrieving clients: ${error.message}`);
-    throw error;
-  }
-}
-
-export async function getAllClientsHandler(req, reply) {
-  try {
-    var { limit = 10, page = 1 } = req.query;
-    const offset = (page - 1) * limit;
-
-    if (limit === 0) {
-      limit = null;
-    }
-
-    req.log.info(
-      `📥 Request received: GET /clients?limit=${limit}&page=${page}`
-    );
-
-    console.time("⏱️ GET /clients execution time");
-    const clients = await getAllClients(req.server, limit, offset, page);
     console.timeEnd("⏱️ GET /clients execution time");
 
     req.log.info(`✅ Clients retrieved: ${clients.length} records found`);

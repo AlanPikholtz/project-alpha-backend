@@ -14,6 +14,11 @@ export const getAllClientsSchema = {
         minimum: 0,
         description: "Number of page",
       },
+      accountId: {
+        type: "integer",
+        minimum: 1,
+        description: "Account ID",
+      },
     },
   },
   response: {
