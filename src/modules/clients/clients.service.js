@@ -2,8 +2,10 @@ import { ERROR_TYPES } from "../../constants/errorTypes.js";
 import {
   fetchClientByCode,
   fetchClientById,
+  fetchClientOperations,
   fetchClients,
   fetchCountClients,
+  fetchCountOperations,
   insertClient,
   putClient,
 } from "./clients.repository.js";
@@ -142,4 +144,67 @@ export async function updateClient(
     };
 
   return { succeeded: succeeded };
+}
+
+export async function getClientOperations(
+  fastify,
+  clientId,
+  limit,
+  offset,
+  from,
+  to,
+  sort,
+  order,
+  page
+) {
+  const client = await fetchClientById(fastify, clientId);
+  if (!client)
+    throw {
+      isCustom: true,
+      statusCode: 404,
+      errorType: ERROR_TYPES.NOT_FOUND,
+      message: `No se encontró cliente con id ${clientId}.`,
+    };
+
+  const operations = await fetchClientOperations(
+    fastify,
+    clientId,
+    limit,
+    offset,
+    from,
+    to,
+    sort,
+    order
+  );
+
+  const mappedOperations = operations.map((operation) => ({
+    ...operation,
+    clientAmount: operation.commissionAmount
+      ? operation.amount.minus(operation.commissionAmount)
+      : null,
+  }));
+
+  var paginatedOperations;
+
+  if (limit) {
+    paginatedOperations = mappedOperations.slice(offset, offset + limit);
+  } else {
+    paginatedOperations = mappedOperations;
+  }
+
+  const totalOperations = await fetchCountOperations(
+    fastify,
+    clientId,
+    from,
+    to
+  );
+  const totalPages = !limit ? 1 : Math.ceil(totalOperations / limit);
+
+  return {
+    data: paginatedOperations,
+    total: totalOperations,
+    page: page,
+    pages: totalPages,
+    limit: limit ?? 0,
+  };
 }

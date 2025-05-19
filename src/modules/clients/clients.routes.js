@@ -2,12 +2,14 @@ import {
   createClientHandler,
   getAllClientsHandler,
   getClientHandler,
+  getClientOperationsHandler,
   updateClientHandler,
 } from "./clients.controller.js";
 
 import {
   createClientSchema,
   getAllClientsSchema,
+  getClientOperationsSchema,
   getClientSchema,
   updateClientSchema,
 } from "./clients.schema.js";
@@ -26,6 +28,15 @@ export default async function clientRoutes(fastify) {
       preValidation: [fastify.authenticate],
     },
     getClientHandler
+  );
+
+  fastify.get(
+    "/clients/:id/operations",
+    {
+      schema: getClientOperationsSchema,
+      preValidation: [fastify.authenticate],
+    },
+    getClientOperationsHandler
   );
 
   fastify.put(

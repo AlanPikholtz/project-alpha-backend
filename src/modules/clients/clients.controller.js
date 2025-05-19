@@ -1,7 +1,9 @@
+import { normalizeResponse } from "../../utils/response.js";
 import {
   createClient,
   getAllClients,
   getClientById,
+  getClientOperations,
   updateClient,
 } from "./clients.service.js";
 
@@ -105,6 +107,67 @@ export async function updateClientHandler(req, reply) {
     return reply.status(204).send();
   } catch (error) {
     req.log.error(`❌ Error creating client: ${error.message}`);
+    throw error;
+  }
+}
+
+export async function getClientOperationsHandler(req, reply) {
+  try {
+    const { id } = req.params;
+
+    var {
+      limit = 10,
+      page = 1,
+      from,
+      to,
+      sort = "assignedAt",
+      order = "desc",
+    } = req.query;
+    const offset = (page - 1) * limit;
+
+    if (limit === 0) {
+      limit = null;
+    }
+
+    if (from && to) {
+      const fromDate = DateTime.fromISO(from, { setZone: true }).toUTC();
+      const toDate = DateTime.fromISO(to, { setZone: true }).toUTC();
+
+      if (fromDate > toDate) {
+        throw {
+          isCustom: true,
+          statusCode: 400,
+          errorType: ERROR_TYPES.BAD_REQUEST,
+          message: '"from" no puede ser mayor que "to"',
+        };
+      }
+    }
+
+    req.log.info(
+      `📥 Request received: GET /client/${id}/operations?limit=${limit}&page=${page}&from=${from}&to=${to}&sort=${sort}&order=${order}`
+    );
+
+    console.time(`⏱️ GET /client/${id}/operations execution time`);
+
+    const operations = await getClientOperations(
+      req.server,
+      id,
+      limit,
+      offset,
+      from,
+      to,
+      sort,
+      order,
+      page
+    );
+
+    console.timeEnd(`⏱️ GET /client/${id}/operations execution time`);
+
+    req.log.info(`✅ Operations retrieved: ${operations.length} records found`);
+    const normalizedOperations = normalizeResponse(operations);
+    return reply.send(normalizedOperations);
+  } catch (error) {
+    req.log.error(`❌ Error retrieving operations: ${error.message}`);
     throw error;
   }
 }
