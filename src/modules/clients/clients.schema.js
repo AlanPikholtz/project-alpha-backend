@@ -310,3 +310,92 @@ export const updateClientSchema = {
     },
   },
 };
+
+export const getClientOperationsSchema = {
+  description: "Retrieve a client operations by client ID",
+  tags: ["Clients"],
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "integer", minimum: 1, description: "Client ID" },
+    },
+  },
+  querystring: {
+    type: "object",
+    properties: {
+      limit: {
+        type: "integer",
+        minimum: 0,
+        description: "Max number of operations to return (0 = all)",
+      },
+      page: {
+        type: "integer",
+        minimum: 0,
+        description: "Number of page",
+      },
+      from: {
+        type: "string",
+        format: "date-time",
+        description: "Start date for filtering operations",
+        errorMessage: {
+          type: "Date must be a string.",
+          format: "Date must be an ISO 8601 date string.",
+        },
+      },
+      to: {
+        type: "string",
+        format: "date-time",
+        description: "End date for filtering operations",
+        errorMessage: {
+          type: "Date must be a string.",
+          format: "Date must be an ISO 8601 date string.",
+        },
+      },
+      sort: {
+        type: "string",
+        enum: ["assignedAt", "date"],
+        description: "Sort field",
+        errorMessage: {
+          type: "Sort field must be a string.",
+          enum: "Sort field must be [assignedAt] | [date].",
+        },
+      },
+      order: {
+        type: "string",
+        enum: ["asc", "desc"],
+        description: "Sort order",
+        errorMessage: {
+          type: "Sort order must be a string.",
+          enum: "Sort order must be [asc] | [desc].",
+        },
+      },
+    },
+  },
+  response: {
+    200: {
+      description: "List of operations",
+      type: "object",
+      properties: {
+        data: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              date: { type: "string", format: "date-time" },
+              type: { type: "string" },
+              amount: { type: "string" },
+              currency: { type: "string" },
+              clientAmount: { type: ["string", "null"] },
+              assignedAt: { type: ["string", "null"], format: "date-time" },
+            },
+          },
+        },
+        page: { type: "integer" },
+        limit: { type: "integer" },
+        total: { type: "integer" },
+        pages: { type: "integer" },
+      },
+    },
+  },
+};
