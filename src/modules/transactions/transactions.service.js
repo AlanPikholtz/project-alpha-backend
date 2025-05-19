@@ -2,6 +2,7 @@ import {
   bulkInsertTransactions,
   fetchCountTransactions,
   fetchTransactions,
+  fetchTransactionsByAmountAndDate,
   fetchTransactionsByIds,
   insertTransaction,
   putTransactionsAndUpdateBalance,
@@ -68,6 +69,30 @@ export async function bulkCreateTransactions(fastify, transactions, accountId) {
       date: parsedDate,
     };
   });
+
+  const existingTransactions = await fetchTransactionsByAmountAndDate(
+    fastify,
+    parsedTransactions
+  );
+
+  if (existingTransactions.length > 0) {
+    const ids = existingTransactions.map((transaction) => transaction.id);
+    const duplicatedDateAmountsString = existingTransactions.map(
+      (transaction) => {
+        return `Fecha: ${transaction.date}, Monto: ${transaction.amount}`;
+      }
+    );
+
+    throw {
+      isCustom: true,
+      statusCode: 400,
+      errorType: ERROR_TYPES.DUPLICATE_ENTRY,
+      message: [
+        `Ya existen transacciones con la misma fecha y monto.`,
+        ...duplicatedDateAmountsString,
+      ],
+    };
+  }
 
   const affectedRows = await bulkInsertTransactions(
     fastify,
