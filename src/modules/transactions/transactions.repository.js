@@ -132,6 +132,18 @@ export async function fetchTransactions(
   return data;
 }
 
+export async function fetchTransactionsByAmountAndDate(fastify, transactions) {
+  const placeholders = transactions.map(() => "(?, ?)").join(", ");
+  const values = transactions.flatMap((t) => [t.amount, t.date]);
+
+  const [rows] = await fastify.mysql.query(
+    `SELECT id, date, amount FROM transactions WHERE (amount, date) IN (${placeholders})`,
+    values
+  );
+
+  return rows;
+}
+
 export async function fetchCountTransactions(
   fastify,
   status,
