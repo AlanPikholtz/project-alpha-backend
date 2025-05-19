@@ -234,7 +234,7 @@ export async function assignTransactions(fastify, transactionIds, clientId) {
 
       amountByPreviousClient[transaction.clientId] = amountByPreviousClient[
         transaction.clientId
-      ].plus(amountWithoutCommission);
+      ].minus(amountWithoutCommission);
     }
 
     const transactionCommissionAmount = transaction.amount
@@ -243,7 +243,7 @@ export async function assignTransactions(fastify, transactionIds, clientId) {
     const transactionAmountWithoutCommission = transaction.amount.minus(
       transactionCommissionAmount
     );
-    client.balance = client.balance.minus(transactionAmountWithoutCommission);
+    client.balance = client.balance.plus(transactionAmountWithoutCommission);
 
     transaction.commissionAmount = transactionCommissionAmount;
   }
