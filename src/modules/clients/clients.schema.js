@@ -387,7 +387,7 @@ export const getClientOperationsSchema = {
               amount: { type: "string" },
               currency: { type: "string" },
               clientAmount: { type: ["string", "null"] },
-              assignedAt: { type: ["string", "null"], format: "date-time" },
+              assignedAt: { type: "string", format: "date-time" },
             },
           },
         },
