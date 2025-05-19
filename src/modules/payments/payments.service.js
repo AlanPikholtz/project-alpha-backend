@@ -6,6 +6,7 @@ import {
   insertPayment,
 } from "./payments.repository.js";
 
+import Decimal from "decimal.js";
 import { DateTime } from "luxon";
 
 export async function getAllPayments(fastify, limit, offset, page) {
@@ -44,13 +45,18 @@ export async function createPayment(
     .toUTC()
     .toFormat("yyyy-MM-dd HH:mm:ss");
 
+  const parsedAmount = new Decimal(amount);
+  const newClientBalance = client.balance.minus(parsedAmount).toString();
+
   const result = await insertPayment(
     fastify,
     parsedDate,
     amount,
     currency,
     method,
-    clientId
+    clientId,
+    newClientBalance
   );
+
   return { id: result.insertId };
 }
