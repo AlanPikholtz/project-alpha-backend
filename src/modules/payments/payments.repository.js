@@ -6,13 +6,38 @@ export async function insertPayment(
   amount,
   currency,
   method,
-  clientId
+  clientId,
+  newClientBalance
 ) {
-  const [result] = await fastify.mysql.query(
-    "INSERT INTO payments (payment_request_date, amount, currency, method, client_id) VALUES (?, ?, ?, ?, ?)",
-    [paymentRequestDate, amount, currency, method, clientId]
-  );
-  return result;
+  const conn = await fastify.mysql.getConnection();
+
+  try {
+    await conn.beginTransaction();
+
+    const [result] = await conn.query(
+      "INSERT INTO payments (payment_request_date, amount, currency, method, client_id) VALUES (?, ?, ?, ?, ?)",
+      [paymentRequestDate, amount, currency, method, clientId]
+    );
+
+    await conn.query("UPDATE clients SET balance = ? WHERE id = ?", [
+      newClientBalance,
+      clientId,
+    ]);
+
+    await conn.query(
+      "INSERT INTO client_balance_history (client_id, balance) VALUES (?, ?)",
+      [clientId, newClientBalance]
+    );
+
+    await conn.commit();
+    conn.release();
+
+    return result;
+  } catch (err) {
+    await conn.rollback();
+    conn.release();
+    throw err;
+  }
 }
 
 export async function fetchPayments(fastify, limit, offset) {
