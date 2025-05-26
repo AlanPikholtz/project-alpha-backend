@@ -79,7 +79,7 @@ export async function bulkCreateTransactions(fastify, transactions, accountId) {
     const duplicatedDateAmounts = existingTransactions.map((transaction) => {
       return {
         date: DateTime.fromSQL(transaction.date, { zone: "utc" }).toISO(),
-        amount: transaction.amount,
+        ...transaction,
       };
     });
 
