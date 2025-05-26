@@ -142,11 +142,11 @@ export async function fetchClientOperations(
   paymentsParams.push(clientId);
 
   if (from) {
-    paymentsConditions.push("date >= ?");
+    paymentsConditions.push("payment_request_date >= ?");
     paymentsParams.push(from);
   }
   if (to) {
-    paymentsConditions.push("date <= ?");
+    paymentsConditions.push("payment_request_date <= ?");
     paymentsParams.push(to);
   }
 
@@ -156,7 +156,7 @@ export async function fetchClientOperations(
 
   const paymentsSortOrder = order.toLowerCase() === "asc" ? "ASC" : "DESC";
 
-  paymentsQuery += ` ORDER BY date ${paymentsSortOrder}`;
+  paymentsQuery += ` ORDER BY payment_request_date ${paymentsSortOrder}`;
 
   const [paymentsRows] = await fastify.mysql.query(
     paymentsQuery,
