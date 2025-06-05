@@ -115,7 +115,7 @@ export const createClientSchema = {
   tags: ["Clients"],
   body: {
     type: "object",
-    required: ["firstName", "lastName", "code", "accountId"],
+    required: ["firstName", "code", "accountId"],
     properties: {
       firstName: {
         type: "string",
@@ -130,12 +130,12 @@ export const createClientSchema = {
       },
       lastName: {
         type: "string",
-        minLength: 3,
+        minLength: 1,
         maxLength: 100,
         description: "Last name",
         errorMessage: {
           type: "El apellido debe ser un string.",
-          minLength: "El apellido debe tener al menos 3 caracteres.",
+          minLength: "El apellido debe tener al menos 1 caracter.",
           maxLength: "El apellido no puede exceder los 100 caracteres.",
         },
       },
@@ -186,7 +186,6 @@ export const createClientSchema = {
     errorMessage: {
       required: {
         firstName: "El nombre es obligatorio.",
-        lastName: "El apellido es obligatorio.",
         code: "El código es obligatorio.",
         accountId: "El ID de la cuenta es obligatorio.",
       },
@@ -245,7 +244,7 @@ export const updateClientSchema = {
   },
   body: {
     type: "object",
-    required: ["firstName", "lastName", "commission", "notes", "accountId"],
+    required: ["firstName", "commission", "notes", "accountId"],
     properties: {
       firstName: {
         type: "string",
@@ -260,12 +259,12 @@ export const updateClientSchema = {
       },
       lastName: {
         type: "string",
-        minLength: 3,
+        minLength: 1,
         maxLength: 100,
         description: "Last name",
         errorMessage: {
           type: "El apellido debe ser un string.",
-          minLength: "El apellido debe tener al menos 3 caracteres.",
+          minLength: "El apellido debe tener al menos 1 caracter.",
           maxLength: "El apellido no puede exceder los 100 caracteres.",
         },
       },
@@ -297,7 +296,6 @@ export const updateClientSchema = {
     errorMessage: {
       required: {
         firstName: "El nombre es obligatorio.",
-        lastName: "El apellido es obligatorio.",
         commission: "La comisión es obligatoria.",
         notes: "Las notas son obligatorias.",
         accountId: "El ID de la cuenta es obligatorio.",
