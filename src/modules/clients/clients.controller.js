@@ -69,7 +69,7 @@ export async function createClientHandler(req, reply) {
     const clientId = await createClient(
       req.server,
       firstName,
-      lastName,
+      lastName ?? null,
       code,
       balance,
       commission ?? null,
@@ -98,7 +98,7 @@ export async function updateClientHandler(req, reply) {
       req.server,
       id,
       firstName,
-      lastName,
+      lastName ?? null,
       commission,
       notes,
       accountId
