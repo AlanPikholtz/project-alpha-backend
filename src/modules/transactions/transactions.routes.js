@@ -3,6 +3,7 @@ import {
   bulkCreateTransactionsHandler,
   createTransactionHandler,
   getTransactionsHandler,
+  unassignTransactionHandler,
 } from "./transactions.controller.js";
 
 import {
@@ -10,6 +11,7 @@ import {
   bulkCreateTransactionsSchema,
   createTransactionSchema,
   getTransactionsSchema,
+  unassignTransactionSchema,
 } from "./transactions.schema.js";
 
 export default async function transactionRoutes(fastify) {
@@ -47,5 +49,14 @@ export default async function transactionRoutes(fastify) {
       preValidation: [fastify.authenticate],
     },
     assignTransactionsHandler
+  );
+
+  fastify.put(
+    "/transactions/:transactionId/unassign",
+    {
+      schema: unassignTransactionSchema,
+      preValidation: [fastify.authenticate],
+    },
+    unassignTransactionHandler
   );
 }

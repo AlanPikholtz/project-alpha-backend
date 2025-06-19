@@ -241,3 +241,40 @@ export async function putTransactionsAndUpdateBalance(
     throw err;
   }
 }
+
+export async function putUnassignedTransactionAndUpdateBalance(
+  fastify,
+  transaction,
+  clientId,
+  newClientBalance
+) {
+  const conn = await fastify.mysql.getConnection();
+
+  try {
+    await conn.beginTransaction();
+
+    await conn.query(
+      "UPDATE transactions SET client_id = ?, commission_amount = ?, assigned_at = ? WHERE id = ?",
+      [null, null, null, transaction.id]
+    );
+
+    await conn.query("UPDATE clients SET balance = ? WHERE id = ?", [
+      newClientBalance,
+      clientId,
+    ]);
+
+    await conn.query(
+      "INSERT INTO client_balance_history (client_id, balance) VALUES (?, ?)",
+      [clientId, newClientBalance]
+    );
+
+    await conn.commit();
+    conn.release();
+
+    return true;
+  } catch (err) {
+    await conn.rollback();
+    conn.release();
+    throw err;
+  }
+}
