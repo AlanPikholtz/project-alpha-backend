@@ -309,6 +309,41 @@ export const updateClientSchema = {
   },
 };
 
+export const updateClientBalanceSchema = {
+  description: "Update a client balance",
+  tags: ["Clients"],
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "integer", minimum: 1, description: "Client ID" },
+    },
+  },
+  body: {
+    type: "object",
+    required: ["balance"],
+    properties: {
+      balance: {
+        type: "number",
+        description: "Balance",
+        errorMessage: {
+          type: "El balance debe ser un número.",
+        },
+      },
+    },
+    errorMessage: {
+      required: {
+        balance: "El balance es obligatorio.",
+      },
+    },
+  },
+  response: {
+    204: {
+      description: "El balance del cliente se actualizó correctamente",
+    },
+  },
+};
+
 export const getClientOperationsSchema = {
   description: "Retrieve a client operations by client ID",
   tags: ["Clients"],
