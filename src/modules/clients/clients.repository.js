@@ -85,6 +85,14 @@ export async function putClient(
   return result.affectedRows != 0;
 }
 
+export async function putClientBalance(fastify, clientId, balance) {
+  const [result] = await fastify.mysql.execute(
+    "UPDATE clients SET balance = ? WHERE id = ?",
+    [balance, clientId]
+  );
+  return result.affectedRows != 0;
+}
+
 export async function fetchClientOperations(
   fastify,
   clientId,

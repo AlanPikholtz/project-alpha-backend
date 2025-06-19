@@ -7,6 +7,7 @@ import {
   getClientById,
   getClientOperations,
   updateClient,
+  updateClientBalance,
 } from "./clients.service.js";
 
 export async function getAllClientsHandler(req, reply) {
@@ -108,7 +109,26 @@ export async function updateClientHandler(req, reply) {
 
     return reply.status(204).send();
   } catch (error) {
-    req.log.error(`❌ Error creating client: ${error.message}`);
+    req.log.error(`❌ Error updating client: ${error.message}`);
+    throw error;
+  }
+}
+
+export async function updateClientBalanceHandler(req, reply) {
+  try {
+    const { id } = req.params;
+
+    const { balance } = req.body;
+
+    req.log.info(`📥 Updating client ${id} balance`);
+
+    await updateClientBalance(req.server, id, balance);
+
+    req.log.info(`✅ Client balance updated successfully - Client id: ${id}`);
+
+    return reply.status(204).send();
+  } catch (error) {
+    req.log.error(`❌ Error updating client balance: ${error.message}`);
     throw error;
   }
 }
