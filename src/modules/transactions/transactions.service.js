@@ -1,11 +1,13 @@
 import {
   bulkInsertTransactions,
   fetchCountTransactions,
+  fetchTransactionById,
   fetchTransactions,
   fetchTransactionsByAmountAndDate,
   fetchTransactionsByIds,
   insertTransaction,
   putTransactionsAndUpdateBalance,
+  putUnassignedTransactionAndUpdateBalance,
 } from "./transactions.repository.js";
 
 import { fetchAccountById } from "../accounts/accounts.repository.js";
@@ -278,6 +280,61 @@ export async function assignTransactions(fastify, transactionIds, clientId) {
     client.id,
     balance,
     amountByPreviousClient
+  );
+
+  if (!succeeded)
+    throw {
+      isCustom: true,
+      statusCode: 500,
+      errorType: ERROR_TYPES.INTERNAL_SERVER_ERROR,
+      message: `Ocurrió un error al actualizar las transacciones.`,
+    };
+
+  return { succeeded: succeeded };
+}
+
+export async function unassignTransaction(fastify, transactionId) {
+  const transaction = await fetchTransactionById(fastify, transactionId);
+
+  if (!transaction)
+    throw {
+      isCustom: true,
+      statusCode: 404,
+      errorType: ERROR_TYPES.NOT_FOUND,
+      message: `No se encontró transacción con id ${transactionId}.`,
+    };
+
+  if (!transaction.clientId)
+    throw {
+      isCustom: true,
+      statusCode: 400,
+      errorType: ERROR_TYPES.BAD_REQUEST,
+      message: `La transacción ${transactionId} no está asignada a ningún cliente.`,
+    };
+
+  const client = await fetchClientById(fastify, transaction.clientId);
+
+  if (!client)
+    throw {
+      isCustom: true,
+      statusCode: 404,
+      errorType: ERROR_TYPES.NOT_FOUND,
+      message: `No se encontró cliente con id ${transaction.clientId}.`,
+    };
+
+  const amountWithoutCommission = transaction.amount.minus(
+    transaction.commissionAmount
+  );
+
+  client.balance = client.balance.minus(amountWithoutCommission);
+
+  const balance = new Decimal(client.balance).toString();
+
+  const succeeded = await putUnassignedTransactionAndUpdateBalance(
+    fastify,
+    transaction,
+    client.id,
+    balance
   );
 
   if (!succeeded)

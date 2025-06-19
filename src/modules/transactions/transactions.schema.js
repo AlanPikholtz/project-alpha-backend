@@ -304,3 +304,25 @@ export const bulkCreateTransactionsSchema = {
     },
   },
 };
+
+export const unassignTransactionSchema = {
+  description: "Unassign transaction",
+  tags: ["Transactions"],
+  params: {
+    type: "object",
+    properties: {
+      transactionId: {
+        type: "integer",
+        description: "Transaction ID",
+        errorMessage: {
+          type: "El ID de transacción debe ser un número entero.",
+        },
+      },
+    },
+  },
+  response: {
+    204: {
+      description: "La transacción se actualizó correctamente",
+    },
+  },
+};
