@@ -20,6 +20,7 @@ export async function fetchMetrics(fastify, start, end) {
       FROM accounts a
       LEFT JOIN clients c ON c.account_id = a.id
       WHERE c.is_deleted = FALSE
+        AND a.is_deleted = FALSE
       GROUP BY a.id, a.name
     `),
 

@@ -1,5 +1,6 @@
 import {
   createAccount,
+  deleteAccountById,
   getAccountById,
   getAllAccounts,
   updateAccount,
@@ -79,6 +80,23 @@ export async function updateAccountHandler(req, reply) {
     return reply.status(204).send();
   } catch (error) {
     req.log.error(`❌ Error updating account: ${error.message}`);
+    throw error;
+  }
+}
+
+export async function deleteAccountHandler(req, reply) {
+  try {
+    const { id } = req.params;
+
+    req.log.info(`📥 Deleting account ${id}`);
+
+    await deleteAccountById(req.server, id, null);
+
+    req.log.info(`✅ Account deleted successfully - Account id: ${id}`);
+
+    return reply.status(204).send();
+  } catch (error) {
+    req.log.error(`❌ Error deleting account: ${error.message}`);
     throw error;
   }
 }

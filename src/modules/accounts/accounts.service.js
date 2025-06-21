@@ -1,5 +1,6 @@
 import { ERROR_TYPES } from "../../constants/errorTypes.js";
 import {
+  deleteAccount,
   fetchAccountById,
   fetchAccounts,
   fetchCountAccounts,
@@ -60,6 +61,30 @@ export async function updateAccount(fastify, accountId, name) {
       statusCode: 500,
       errorType: ERROR_TYPES.INTERNAL_SERVER_ERROR,
       message: `Ocurrió un error al actualizar la cuenta ${accountId}.`,
+    };
+
+  return { succeeded: succeeded };
+}
+
+export async function deleteAccountById(fastify, accountId) {
+  const account = await fetchAccountById(fastify, accountId);
+
+  if (!account)
+    throw {
+      isCustom: true,
+      statusCode: 404,
+      errorType: ERROR_TYPES.NOT_FOUND,
+      message: `No se encontró cuenta con id ${accountId}.`,
+    };
+
+  const succeeded = await deleteAccount(fastify, accountId);
+
+  if (!succeeded)
+    throw {
+      isCustom: true,
+      statusCode: 500,
+      errorType: ERROR_TYPES.INTERNAL_SERVER_ERROR,
+      message: `Ocurrió un error al eliminar la cuenta ${accountId}.`,
     };
 
   return { succeeded: succeeded };
