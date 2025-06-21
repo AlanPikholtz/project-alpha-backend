@@ -309,6 +309,23 @@ export const updateClientSchema = {
   },
 };
 
+export const deleteClientSchema = {
+  description: "Delete a client",
+  tags: ["Clients"],
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "integer", minimum: 1, description: "Client ID" },
+    },
+  },
+  response: {
+    204: {
+      description: "El cliente se eliminó correctamente",
+    },
+  },
+};
+
 export const updateClientBalanceSchema = {
   description: "Update a client balance",
   tags: ["Clients"],

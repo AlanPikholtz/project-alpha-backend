@@ -1,5 +1,6 @@
 import {
   createClientHandler,
+  deleteClientHandler,
   getAllClientsHandler,
   getClientHandler,
   getClientOperationsHandler,
@@ -9,6 +10,7 @@ import {
 
 import {
   createClientSchema,
+  deleteClientSchema,
   getAllClientsSchema,
   getClientOperationsSchema,
   getClientSchema,
@@ -48,6 +50,15 @@ export default async function clientRoutes(fastify) {
       preValidation: [fastify.authenticate],
     },
     updateClientHandler
+  );
+
+  fastify.delete(
+    "/clients/:id",
+    {
+      schema: deleteClientSchema,
+      preValidation: [fastify.authenticate],
+    },
+    deleteClientHandler
   );
 
   fastify.put(
