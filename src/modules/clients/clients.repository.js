@@ -22,7 +22,7 @@ export async function fetchClients(fastify, limit, offset, accountId) {
   const params = [];
 
   if (accountId) {
-    query += " WHERE account_id = ?";
+    query += " WHERE account_id = ? AND is_deleted = FALSE";
     params.push(accountId);
   }
 
@@ -41,7 +41,7 @@ export async function fetchCountClients(fastify, accountId) {
   const params = [];
 
   if (accountId) {
-    query += " WHERE account_id = ?";
+    query += " WHERE account_id = ? AND is_deleted = FALSE";
     params.push(accountId);
   }
 
@@ -52,7 +52,7 @@ export async function fetchCountClients(fastify, accountId) {
 
 export async function fetchClientById(fastify, id) {
   const [rows] = await fastify.mysql.query(
-    "SELECT * FROM clients WHERE id = ?",
+    "SELECT * FROM clients WHERE id = ? AND is_deleted = FALSE",
     [id]
   );
 
@@ -62,7 +62,7 @@ export async function fetchClientById(fastify, id) {
 
 export async function fetchClientByCode(fastify, code) {
   const [rows] = await fastify.mysql.query(
-    "SELECT * FROM clients WHERE code = ?",
+    "SELECT * FROM clients WHERE code = ? AND is_deleted = FALSE",
     [code]
   );
   const data = normalizeRow(rows[0]);
@@ -253,4 +253,12 @@ export async function fetchCountOperations(fastify, clientId, from, to) {
   const totalPayments = paymentsRows[0].total;
 
   return totalTransactions + totalPayments;
+}
+
+export async function deleteClient(fastify, clientId) {
+  const [result] = await fastify.mysql.execute(
+    "UPDATE clients SET is_deleted = TRUE, deleted_at = NOW() WHERE id = ?",
+    [clientId]
+  );
+  return result.affectedRows > 0;
 }

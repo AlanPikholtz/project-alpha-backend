@@ -3,6 +3,7 @@ import { ERROR_TYPES } from "../../constants/errorTypes.js";
 import { normalizeResponse } from "../../utils/response.js";
 import {
   createClient,
+  deleteClientById,
   getAllClients,
   getClientById,
   getClientOperations,
@@ -190,6 +191,23 @@ export async function getClientOperationsHandler(req, reply) {
     return reply.send(normalizedOperations);
   } catch (error) {
     req.log.error(`❌ Error retrieving operations: ${error.message}`);
+    throw error;
+  }
+}
+
+export async function deleteClientHandler(req, reply) {
+  try {
+    const { id } = req.params;
+
+    req.log.info(`📥 Deleting client ${id}`);
+
+    await deleteClientById(req.server, id);
+
+    req.log.info(`✅ Client deleted successfully - Client id: ${id}`);
+
+    return reply.status(204).send();
+  } catch (error) {
+    req.log.error(`❌ Error deleting client: ${error.message}`);
     throw error;
   }
 }
