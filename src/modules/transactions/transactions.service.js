@@ -1,5 +1,6 @@
 import {
   bulkInsertTransactions,
+  deleteTransactionsByIds,
   fetchCountTransactions,
   fetchTransactionById,
   fetchTransactions,
@@ -343,6 +344,41 @@ export async function unassignTransaction(fastify, transactionId) {
       statusCode: 500,
       errorType: ERROR_TYPES.INTERNAL_SERVER_ERROR,
       message: `Ocurrió un error al actualizar la transacción ${transactionId}.`,
+    };
+
+  return { succeeded: succeeded };
+}
+
+export async function bulkDeleteTransactions(fastify, transactionIds) {
+  const transactions = await fetchTransactionsByIds(fastify, transactionIds);
+
+  if (transactions.length !== transactionIds.length)
+    throw {
+      isCustom: true,
+      statusCode: 404,
+      errorType: ERROR_TYPES.NOT_FOUND,
+      message: `No se encontraron todas las transacciones.`,
+    };
+
+  const isAnyAlreadyAssignedToClient = transactions.some((t) => t.clientId);
+
+  if (isAnyAlreadyAssignedToClient) {
+    throw {
+      isCustom: true,
+      statusCode: 400,
+      errorType: ERROR_TYPES.DUPLICATE_ENTRY,
+      message: `Una o más transacciones se encuentran vinculadas a un cliente.`,
+    };
+  }
+
+  const succeeded = await deleteTransactionsByIds(fastify, transactionIds);
+
+  if (!succeeded)
+    throw {
+      isCustom: true,
+      statusCode: 500,
+      errorType: ERROR_TYPES.INTERNAL_SERVER_ERROR,
+      message: `Ocurrió un error al eliminar las transacciones.`,
     };
 
   return { succeeded: succeeded };

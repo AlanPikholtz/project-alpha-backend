@@ -121,6 +121,8 @@ export async function fetchClientOperations(
     params.push(to);
   }
 
+  conditions.push("isDeleted = FALSE");
+
   if (conditions.length > 0) {
     query += " WHERE " + conditions.join(" AND ");
   }

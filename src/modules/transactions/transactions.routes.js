@@ -1,6 +1,7 @@
 import {
   assignTransactionsHandler,
   bulkCreateTransactionsHandler,
+  bulkDeleteTransactionsHandler,
   createTransactionHandler,
   getTransactionsHandler,
   unassignTransactionHandler,
@@ -9,6 +10,7 @@ import {
 import {
   assignTransactionsSchema,
   bulkCreateTransactionsSchema,
+  bulkDeleteTransactionsSchema,
   createTransactionSchema,
   getTransactionsSchema,
   unassignTransactionSchema,
@@ -31,6 +33,15 @@ export default async function transactionRoutes(fastify) {
       preValidation: [fastify.authenticate],
     },
     bulkCreateTransactionsHandler
+  );
+
+  fastify.delete(
+    "/transactions/bulk",
+    {
+      schema: bulkDeleteTransactionsSchema,
+      preValidation: [fastify.authenticate],
+    },
+    bulkDeleteTransactionsHandler
   );
 
   fastify.get(
