@@ -9,7 +9,7 @@ export async function insertAccount(fastify, name) {
 }
 
 export async function fetchAccounts(fastify, limit, offset) {
-  let query = "SELECT * FROM accounts";
+  let query = "SELECT * FROM accounts WHERE is_deleted = FALSE";
 
   if (limit !== null) {
     query += ` LIMIT ${limit} OFFSET ${offset}`;
@@ -22,7 +22,7 @@ export async function fetchAccounts(fastify, limit, offset) {
 }
 
 export async function fetchCountAccounts(fastify) {
-  let query = "SELECT COUNT(*) AS total FROM accounts";
+  let query = "SELECT COUNT(*) AS total FROM accounts WHERE is_deleted = FALSE";
 
   const [rows] = await fastify.mysql.query(query);
 
@@ -31,7 +31,7 @@ export async function fetchCountAccounts(fastify) {
 
 export async function fetchAccountById(fastify, id) {
   const [rows] = await fastify.mysql.query(
-    "SELECT * FROM accounts WHERE id = ?",
+    "SELECT * FROM accounts WHERE id = ? AND is_deleted = FALSE",
     [id]
   );
   const data = normalizeRow(rows[0]);
@@ -42,6 +42,14 @@ export async function putAccount(fastify, id, name) {
   const [result] = await fastify.mysql.execute(
     "UPDATE accounts SET name = ? WHERE id = ?",
     [name, id]
+  );
+  return result.affectedRows != 0;
+}
+
+export async function deleteAccount(fastify, id) {
+  const [result] = await fastify.mysql.execute(
+    "UPDATE accounts SET is_deleted = TRUE, deleted_at = NOW() WHERE id = ?",
+    [id]
   );
   return result.affectedRows != 0;
 }

@@ -103,6 +103,23 @@ export const getAccountSchema = {
   },
 };
 
+export const deleteAccountSchema = {
+  description: "Delete an account by ID",
+  tags: ["Accounts"],
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "integer", minimum: 1, description: "Account ID" },
+    },
+  },
+  response: {
+    204: {
+      description: "La cuenta se eliminó correctamente",
+    },
+  },
+};
+
 export const updateAccountSchema = {
   description: "Update an account by ID",
   tags: ["Accounts"],
