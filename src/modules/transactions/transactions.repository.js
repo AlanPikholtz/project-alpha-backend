@@ -4,7 +4,7 @@ export async function fetchTransactionsByIds(fastify, transactionIds) {
   const placeholders = transactionIds.map(() => "?").join(",");
 
   const [rows] = await fastify.mysql.query(
-    `SELECT * FROM transactions WHERE id IN (${placeholders})`,
+    `SELECT * FROM transactions WHERE id IN (${placeholders}) AND isDeleted = FALSE`,
     transactionIds
   );
 
@@ -47,7 +47,7 @@ export async function bulkInsertTransactions(fastify, transactions, accountId) {
 
 export async function fetchTransactionById(fastify, id) {
   const [rows] = await fastify.mysql.execute(
-    "SELECT * FROM transactions WHERE id = ?",
+    "SELECT * FROM transactions WHERE id = ? AND isDeleted = FALSE",
     [id]
   );
 
@@ -106,6 +106,8 @@ export async function fetchTransactions(
     params.push(to);
   }
 
+  conditions.push("t.isDeleted = FALSE");
+
   if (conditions.length > 0) {
     query += " WHERE " + conditions.join(" AND ");
   }
@@ -137,7 +139,7 @@ export async function fetchTransactionsByAmountAndDate(fastify, transactions) {
   const values = transactions.flatMap((t) => [t.amount, t.date]);
 
   const [rows] = await fastify.mysql.query(
-    `SELECT id, date, amount, type FROM transactions WHERE (amount, date) IN (${placeholders})`,
+    `SELECT id, date, amount, type FROM transactions WHERE (amount, date) IN (${placeholders}) AND isDeleted = FALSE`,
     values
   );
 
@@ -178,6 +180,8 @@ export async function fetchCountTransactions(
     conditions.push("date <= ?");
     params.push(to);
   }
+
+  conditions.push("isDeleted = FALSE");
 
   if (conditions.length > 0) {
     query += " WHERE " + conditions.join(" AND ");
@@ -240,6 +244,17 @@ export async function putTransactionsAndUpdateBalance(
     conn.release();
     throw err;
   }
+}
+
+export async function deleteTransactionsByIds(fastify, transactionIds) {
+  const placeholders = transactionIds.map(() => "?").join(",");
+
+  const [rows] = await fastify.mysql.query(
+    `UPDATE transactions SET isDeleted = TRUE, deletedAt = NOW() WHERE id IN (${placeholders})`,
+    transactionIds
+  );
+
+  return rows.affectedRows == transactionIds.length;
 }
 
 export async function putUnassignedTransactionAndUpdateBalance(

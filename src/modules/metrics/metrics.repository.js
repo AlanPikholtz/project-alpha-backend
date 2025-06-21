@@ -31,6 +31,7 @@ export async function fetchMetrics(fastify, start, end) {
       WHERE t.type = 'deposit'
         AND t.client_id IS NOT NULL
         AND t.date BETWEEN ? AND ?
+        AND t.isDeleted = FALSE
       GROUP BY c.id, c.first_name
     `,
       [start, end]
@@ -47,6 +48,7 @@ export async function fetchMetrics(fastify, start, end) {
       WHERE t.type = 'deposit'
         AND t.client_id IS NOT NULL
         AND t.date BETWEEN ? AND ?
+        AND t.isDeleted = FALSE
       GROUP BY c.id, c.first_name
     `,
       [start, end]
@@ -58,6 +60,7 @@ export async function fetchMetrics(fastify, start, end) {
       FROM transactions
       WHERE type = 'deposit'
       AND date BETWEEN ? AND ?
+      AND isDeleted = FALSE
     `,
       [start, end]
     ),
@@ -68,6 +71,7 @@ export async function fetchMetrics(fastify, start, end) {
       FROM transactions
       WHERE type = 'deposit'
       AND date BETWEEN ? AND ?
+      AND isDeleted = FALSE
     `,
       [start, end]
     ),
@@ -77,7 +81,8 @@ export async function fetchMetrics(fastify, start, end) {
       SELECT COUNT(*) AS unassignedDeposits
       FROM transactions
       WHERE type = 'deposit' AND client_id IS NULL
-      AND date BETWEEN ? AND ?;
+      AND date BETWEEN ? AND ?
+      AND isDeleted = FALSE
     `,
       [start, end]
     ),
