@@ -4,7 +4,7 @@ export async function fetchTransactionsByIds(fastify, transactionIds) {
   const placeholders = transactionIds.map(() => "?").join(",");
 
   const [rows] = await fastify.mysql.query(
-    `SELECT * FROM transactions WHERE id IN (${placeholders}) AND isDeleted = FALSE`,
+    `SELECT * FROM transactions WHERE id IN (${placeholders}) AND is_deleted = FALSE`,
     transactionIds
   );
 
@@ -47,7 +47,7 @@ export async function bulkInsertTransactions(fastify, transactions, accountId) {
 
 export async function fetchTransactionById(fastify, id) {
   const [rows] = await fastify.mysql.execute(
-    "SELECT * FROM transactions WHERE id = ? AND isDeleted = FALSE",
+    "SELECT * FROM transactions WHERE id = ? AND is_deleted = FALSE",
     [id]
   );
 
@@ -106,7 +106,7 @@ export async function fetchTransactions(
     params.push(to);
   }
 
-  conditions.push("t.isDeleted = FALSE");
+  conditions.push("t.is_deleted = FALSE");
 
   if (conditions.length > 0) {
     query += " WHERE " + conditions.join(" AND ");
@@ -139,7 +139,7 @@ export async function fetchTransactionsByAmountAndDate(fastify, transactions) {
   const values = transactions.flatMap((t) => [t.amount, t.date]);
 
   const [rows] = await fastify.mysql.query(
-    `SELECT id, date, amount, type FROM transactions WHERE (amount, date) IN (${placeholders}) AND isDeleted = FALSE`,
+    `SELECT id, date, amount, type FROM transactions WHERE (amount, date) IN (${placeholders}) AND is_deleted = FALSE`,
     values
   );
 
@@ -181,7 +181,7 @@ export async function fetchCountTransactions(
     params.push(to);
   }
 
-  conditions.push("isDeleted = FALSE");
+  conditions.push("is_deleted = FALSE");
 
   if (conditions.length > 0) {
     query += " WHERE " + conditions.join(" AND ");
@@ -250,7 +250,7 @@ export async function deleteTransactionsByIds(fastify, transactionIds) {
   const placeholders = transactionIds.map(() => "?").join(",");
 
   const [rows] = await fastify.mysql.query(
-    `UPDATE transactions SET isDeleted = TRUE, deletedAt = NOW() WHERE id IN (${placeholders})`,
+    `UPDATE transactions SET is_deleted = TRUE, deleted_at = NOW() WHERE id IN (${placeholders})`,
     transactionIds
   );
 
