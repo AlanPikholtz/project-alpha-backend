@@ -19,11 +19,18 @@ export async function insertClient(
 
 export async function fetchClients(fastify, limit, offset, accountId) {
   let query = "SELECT * FROM clients";
+  const conditions = [];
   const params = [];
 
   if (accountId) {
-    query += " WHERE account_id = ? AND is_deleted = FALSE";
+    conditions.push("account_id = ?");
     params.push(accountId);
+  }
+
+  conditions.push("is_deleted = FALSE");
+
+  if (conditions.length > 0) {
+    query += " WHERE " + conditions.join(" AND ");
   }
 
   if (limit !== null) {
@@ -38,11 +45,18 @@ export async function fetchClients(fastify, limit, offset, accountId) {
 
 export async function fetchCountClients(fastify, accountId) {
   let query = "SELECT COUNT(*) AS total FROM clients";
+  const conditions = [];
   const params = [];
 
   if (accountId) {
-    query += " WHERE account_id = ? AND is_deleted = FALSE";
+    conditions.push("account_id = ?");
     params.push(accountId);
+  }
+
+  conditions.push("is_deleted = FALSE");
+
+  if (conditions.length > 0) {
+    query += " WHERE " + conditions.join(" AND ");
   }
 
   const [rows] = await fastify.mysql.execute(query, params);
