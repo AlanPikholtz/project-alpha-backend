@@ -1,5 +1,6 @@
 import {
   createAccountHandler,
+  deleteAccountHandler,
   getAccountHandler,
   getAllAccountsHandler,
   updateAccountHandler,
@@ -7,6 +8,7 @@ import {
 
 import {
   createAccountSchema,
+  deleteAccountSchema,
   getAccountSchema,
   getAllAccountsSchema,
   updateAccountSchema,
@@ -26,6 +28,15 @@ export default async function clientRoutes(fastify) {
       preValidation: [fastify.authenticate],
     },
     getAccountHandler
+  );
+
+  fastify.delete(
+    "/accounts/:id",
+    {
+      schema: deleteAccountSchema,
+      preValidation: [fastify.authenticate],
+    },
+    deleteAccountHandler
   );
 
   fastify.post(

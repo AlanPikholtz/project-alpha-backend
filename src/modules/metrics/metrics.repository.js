@@ -8,7 +8,9 @@ export async function fetchMetrics(fastify, start, end) {
     [[{ totalCommissions }]],
     [[{ unassignedDeposits }]],
   ] = await Promise.all([
-    fastify.mysql.query("SELECT COUNT(*) AS totalClients FROM clients"),
+    fastify.mysql.query(
+      "SELECT COUNT(*) AS totalClients FROM clients WHERE is_deleted = FALSE"
+    ),
 
     fastify.mysql.query(`
       SELECT 
@@ -17,6 +19,8 @@ export async function fetchMetrics(fastify, start, end) {
         COUNT(c.id) AS totalClients
       FROM accounts a
       LEFT JOIN clients c ON c.account_id = a.id
+      WHERE c.is_deleted = FALSE
+        AND a.is_deleted = FALSE
       GROUP BY a.id, a.name
     `),
 
@@ -31,6 +35,8 @@ export async function fetchMetrics(fastify, start, end) {
       WHERE t.type = 'deposit'
         AND t.client_id IS NOT NULL
         AND t.date BETWEEN ? AND ?
+        AND t.is_deleted = FALSE
+        AND c.is_deleted = FALSE
       GROUP BY c.id, c.first_name
     `,
       [start, end]
@@ -47,6 +53,8 @@ export async function fetchMetrics(fastify, start, end) {
       WHERE t.type = 'deposit'
         AND t.client_id IS NOT NULL
         AND t.date BETWEEN ? AND ?
+        AND t.is_deleted = FALSE
+        AND c.is_deleted = FALSE
       GROUP BY c.id, c.first_name
     `,
       [start, end]
@@ -58,6 +66,7 @@ export async function fetchMetrics(fastify, start, end) {
       FROM transactions
       WHERE type = 'deposit'
       AND date BETWEEN ? AND ?
+      AND is_deleted = FALSE
     `,
       [start, end]
     ),
@@ -68,6 +77,7 @@ export async function fetchMetrics(fastify, start, end) {
       FROM transactions
       WHERE type = 'deposit'
       AND date BETWEEN ? AND ?
+      AND is_deleted = FALSE
     `,
       [start, end]
     ),
@@ -77,7 +87,8 @@ export async function fetchMetrics(fastify, start, end) {
       SELECT COUNT(*) AS unassignedDeposits
       FROM transactions
       WHERE type = 'deposit' AND client_id IS NULL
-      AND date BETWEEN ? AND ?;
+      AND date BETWEEN ? AND ?
+      AND is_deleted = FALSE
     `,
       [start, end]
     ),

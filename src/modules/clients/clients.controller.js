@@ -3,10 +3,12 @@ import { ERROR_TYPES } from "../../constants/errorTypes.js";
 import { normalizeResponse } from "../../utils/response.js";
 import {
   createClient,
+  deleteClientById,
   getAllClients,
   getClientById,
   getClientOperations,
   updateClient,
+  updateClientBalance,
 } from "./clients.service.js";
 
 export async function getAllClientsHandler(req, reply) {
@@ -69,7 +71,7 @@ export async function createClientHandler(req, reply) {
     const clientId = await createClient(
       req.server,
       firstName,
-      lastName,
+      lastName ?? null,
       code,
       balance,
       commission ?? null,
@@ -98,7 +100,7 @@ export async function updateClientHandler(req, reply) {
       req.server,
       id,
       firstName,
-      lastName,
+      lastName ?? null,
       commission,
       notes,
       accountId
@@ -108,7 +110,26 @@ export async function updateClientHandler(req, reply) {
 
     return reply.status(204).send();
   } catch (error) {
-    req.log.error(`❌ Error creating client: ${error.message}`);
+    req.log.error(`❌ Error updating client: ${error.message}`);
+    throw error;
+  }
+}
+
+export async function updateClientBalanceHandler(req, reply) {
+  try {
+    const { id } = req.params;
+
+    const { balance } = req.body;
+
+    req.log.info(`📥 Updating client ${id} balance`);
+
+    await updateClientBalance(req.server, id, balance);
+
+    req.log.info(`✅ Client balance updated successfully - Client id: ${id}`);
+
+    return reply.status(204).send();
+  } catch (error) {
+    req.log.error(`❌ Error updating client balance: ${error.message}`);
     throw error;
   }
 }
@@ -170,6 +191,23 @@ export async function getClientOperationsHandler(req, reply) {
     return reply.send(normalizedOperations);
   } catch (error) {
     req.log.error(`❌ Error retrieving operations: ${error.message}`);
+    throw error;
+  }
+}
+
+export async function deleteClientHandler(req, reply) {
+  try {
+    const { id } = req.params;
+
+    req.log.info(`📥 Deleting client ${id}`);
+
+    await deleteClientById(req.server, id);
+
+    req.log.info(`✅ Client deleted successfully - Client id: ${id}`);
+
+    return reply.status(204).send();
+  } catch (error) {
+    req.log.error(`❌ Error deleting client: ${error.message}`);
     throw error;
   }
 }

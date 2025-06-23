@@ -1,8 +1,10 @@
 import {
   assignTransactions,
   bulkCreateTransactions,
+  bulkDeleteTransactions,
   createTransaction,
   getTransactions,
+  unassignTransaction,
 } from "./transactions.service.js";
 
 import { DateTime } from "luxon";
@@ -140,6 +142,40 @@ export async function assignTransactionsHandler(req, reply) {
     return reply.status(204).send();
   } catch (error) {
     req.log.error(`❌ Error assigning transactions: ${error.message}`);
+    throw error;
+  }
+}
+
+export async function unassignTransactionHandler(req, reply) {
+  try {
+    const { transactionId } = req.params;
+
+    req.log.info(`📥 Unassigning transaction ${transactionId}`);
+
+    await unassignTransaction(req.server, transactionId);
+
+    req.log.info(`✅ Transaction ${transactionId} unassigned successfully`);
+
+    return reply.status(204).send();
+  } catch (error) {
+    req.log.error(`❌ Error unassigning transaction: ${error.message}`);
+    throw error;
+  }
+}
+
+export async function bulkDeleteTransactionsHandler(req, reply) {
+  try {
+    const { transactionIds } = req.body;
+
+    req.log.info(`📥 Deleting transactions ${transactionIds}`);
+
+    await bulkDeleteTransactions(req.server, transactionIds);
+
+    req.log.info(`✅ Transactions deleted successfully`);
+
+    return reply.status(204).send();
+  } catch (error) {
+    req.log.error(`❌ Error deleting transactions: ${error.message}`);
     throw error;
   }
 }

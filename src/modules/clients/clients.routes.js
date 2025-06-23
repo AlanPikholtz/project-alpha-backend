@@ -1,16 +1,20 @@
 import {
   createClientHandler,
+  deleteClientHandler,
   getAllClientsHandler,
   getClientHandler,
   getClientOperationsHandler,
+  updateClientBalanceHandler,
   updateClientHandler,
 } from "./clients.controller.js";
 
 import {
   createClientSchema,
+  deleteClientSchema,
   getAllClientsSchema,
   getClientOperationsSchema,
   getClientSchema,
+  updateClientBalanceSchema,
   updateClientSchema,
 } from "./clients.schema.js";
 
@@ -46,6 +50,24 @@ export default async function clientRoutes(fastify) {
       preValidation: [fastify.authenticate],
     },
     updateClientHandler
+  );
+
+  fastify.delete(
+    "/clients/:id",
+    {
+      schema: deleteClientSchema,
+      preValidation: [fastify.authenticate],
+    },
+    deleteClientHandler
+  );
+
+  fastify.put(
+    "/clients/:id/balance",
+    {
+      schema: updateClientBalanceSchema,
+      preValidation: [fastify.authenticate],
+    },
+    updateClientBalanceHandler
   );
 
   fastify.post(

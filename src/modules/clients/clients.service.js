@@ -1,5 +1,6 @@
 import { ERROR_TYPES } from "../../constants/errorTypes.js";
 import {
+  deleteClient,
   fetchClientByCode,
   fetchClientById,
   fetchClientOperations,
@@ -8,6 +9,7 @@ import {
   fetchCountOperations,
   insertClient,
   putClient,
+  putClientBalance,
 } from "./clients.repository.js";
 
 import { fetchAccountById } from "../accounts/accounts.repository.js";
@@ -141,6 +143,54 @@ export async function updateClient(
       statusCode: 500,
       errorType: ERROR_TYPES.INTERNAL_SERVER_ERROR,
       message: `Ocurrió un error al actualizar el cliente ${clientId}.`,
+    };
+
+  return { succeeded: succeeded };
+}
+
+export async function deleteClientById(fastify, clientId) {
+  const client = await fetchClientById(fastify, clientId);
+
+  if (!client)
+    throw {
+      isCustom: true,
+      statusCode: 404,
+      errorType: ERROR_TYPES.NOT_FOUND,
+      message: `No se encontró cliente con id ${clientId}.`,
+    };
+
+  const succeeded = await deleteClient(fastify, clientId);
+
+  if (!succeeded)
+    throw {
+      isCustom: true,
+      statusCode: 500,
+      errorType: ERROR_TYPES.INTERNAL_SERVER_ERROR,
+      message: `Ocurrió un error al eliminar el cliente ${clientId}.`,
+    };
+
+  return { succeeded: succeeded };
+}
+
+export async function updateClientBalance(fastify, clientId, balance) {
+  const client = await fetchClientById(fastify, clientId);
+
+  if (!client)
+    throw {
+      isCustom: true,
+      statusCode: 404,
+      errorType: ERROR_TYPES.NOT_FOUND,
+      message: `No se encontró cliente con id ${clientId}.`,
+    };
+
+  const succeeded = await putClientBalance(fastify, clientId, balance);
+
+  if (!succeeded)
+    throw {
+      isCustom: true,
+      statusCode: 500,
+      errorType: ERROR_TYPES.INTERNAL_SERVER_ERROR,
+      message: `Ocurrió un error al actualizar el balance del cliente ${clientId}.`,
     };
 
   return { succeeded: succeeded };

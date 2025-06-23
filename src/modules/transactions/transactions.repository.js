@@ -4,7 +4,7 @@ export async function fetchTransactionsByIds(fastify, transactionIds) {
   const placeholders = transactionIds.map(() => "?").join(",");
 
   const [rows] = await fastify.mysql.query(
-    `SELECT * FROM transactions WHERE id IN (${placeholders})`,
+    `SELECT * FROM transactions WHERE id IN (${placeholders}) AND is_deleted = FALSE`,
     transactionIds
   );
 
@@ -47,7 +47,7 @@ export async function bulkInsertTransactions(fastify, transactions, accountId) {
 
 export async function fetchTransactionById(fastify, id) {
   const [rows] = await fastify.mysql.execute(
-    "SELECT * FROM transactions WHERE id = ?",
+    "SELECT * FROM transactions WHERE id = ? AND is_deleted = FALSE",
     [id]
   );
 
@@ -106,6 +106,8 @@ export async function fetchTransactions(
     params.push(to);
   }
 
+  conditions.push("t.is_deleted = FALSE");
+
   if (conditions.length > 0) {
     query += " WHERE " + conditions.join(" AND ");
   }
@@ -137,7 +139,7 @@ export async function fetchTransactionsByAmountAndDate(fastify, transactions) {
   const values = transactions.flatMap((t) => [t.amount, t.date]);
 
   const [rows] = await fastify.mysql.query(
-    `SELECT id, date, amount, type FROM transactions WHERE (amount, date) IN (${placeholders})`,
+    `SELECT id, date, amount, type FROM transactions WHERE (amount, date) IN (${placeholders}) AND is_deleted = FALSE`,
     values
   );
 
@@ -178,6 +180,8 @@ export async function fetchCountTransactions(
     conditions.push("date <= ?");
     params.push(to);
   }
+
+  conditions.push("is_deleted = FALSE");
 
   if (conditions.length > 0) {
     query += " WHERE " + conditions.join(" AND ");
@@ -230,6 +234,54 @@ export async function putTransactionsAndUpdateBalance(
         [oldClientId, oldClientBalance.toString()]
       );
     }
+
+    await conn.commit();
+    conn.release();
+
+    return true;
+  } catch (err) {
+    await conn.rollback();
+    conn.release();
+    throw err;
+  }
+}
+
+export async function deleteTransactionsByIds(fastify, transactionIds) {
+  const placeholders = transactionIds.map(() => "?").join(",");
+
+  const [rows] = await fastify.mysql.query(
+    `UPDATE transactions SET is_deleted = TRUE, deleted_at = NOW() WHERE id IN (${placeholders})`,
+    transactionIds
+  );
+
+  return rows.affectedRows == transactionIds.length;
+}
+
+export async function putUnassignedTransactionAndUpdateBalance(
+  fastify,
+  transaction,
+  clientId,
+  newClientBalance
+) {
+  const conn = await fastify.mysql.getConnection();
+
+  try {
+    await conn.beginTransaction();
+
+    await conn.query(
+      "UPDATE transactions SET client_id = ?, commission_amount = ?, assigned_at = ? WHERE id = ?",
+      [null, null, null, transaction.id]
+    );
+
+    await conn.query("UPDATE clients SET balance = ? WHERE id = ?", [
+      newClientBalance,
+      clientId,
+    ]);
+
+    await conn.query(
+      "INSERT INTO client_balance_history (client_id, balance) VALUES (?, ?)",
+      [clientId, newClientBalance]
+    );
 
     await conn.commit();
     conn.release();

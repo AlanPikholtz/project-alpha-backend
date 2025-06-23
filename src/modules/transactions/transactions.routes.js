@@ -1,15 +1,19 @@
 import {
   assignTransactionsHandler,
   bulkCreateTransactionsHandler,
+  bulkDeleteTransactionsHandler,
   createTransactionHandler,
   getTransactionsHandler,
+  unassignTransactionHandler,
 } from "./transactions.controller.js";
 
 import {
   assignTransactionsSchema,
   bulkCreateTransactionsSchema,
+  bulkDeleteTransactionsSchema,
   createTransactionSchema,
   getTransactionsSchema,
+  unassignTransactionSchema,
 } from "./transactions.schema.js";
 
 export default async function transactionRoutes(fastify) {
@@ -31,6 +35,15 @@ export default async function transactionRoutes(fastify) {
     bulkCreateTransactionsHandler
   );
 
+  fastify.delete(
+    "/transactions/bulk",
+    {
+      schema: bulkDeleteTransactionsSchema,
+      preValidation: [fastify.authenticate],
+    },
+    bulkDeleteTransactionsHandler
+  );
+
   fastify.get(
     "/transactions",
     {
@@ -47,5 +60,14 @@ export default async function transactionRoutes(fastify) {
       preValidation: [fastify.authenticate],
     },
     assignTransactionsHandler
+  );
+
+  fastify.put(
+    "/transactions/:transactionId/unassign",
+    {
+      schema: unassignTransactionSchema,
+      preValidation: [fastify.authenticate],
+    },
+    unassignTransactionHandler
   );
 }

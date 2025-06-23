@@ -226,6 +226,38 @@ export const assignTransactionsSchema = {
   },
 };
 
+export const bulkDeleteTransactionsSchema = {
+  description: "Delete transactions",
+  tags: ["Transactions"],
+  body: {
+    type: "object",
+    required: ["transactionIds"],
+    properties: {
+      transactionIds: {
+        type: "array",
+        items: { type: "integer" },
+        minItems: 1,
+        uniqueItems: true,
+        errorMessage: {
+          type: "transactionIds debe ser un array.",
+          minItems: "transactionIds debe tener al menos un elemento.",
+          uniqueItems: "transactionIds no puede tener elementos duplicados.",
+        },
+      },
+    },
+    errorMessage: {
+      required: {
+        transactionIds: "transactionIds es obligatorio.",
+      },
+    },
+  },
+  response: {
+    204: {
+      description: "Las transacciones se eliminaron correctamente",
+    },
+  },
+};
+
 export const bulkCreateTransactionsSchema = {
   description: "Bulk create transactions",
   tags: ["Transactions"],
@@ -301,6 +333,28 @@ export const bulkCreateTransactionsSchema = {
       properties: {
         id: { type: "integer" },
       },
+    },
+  },
+};
+
+export const unassignTransactionSchema = {
+  description: "Unassign transaction",
+  tags: ["Transactions"],
+  params: {
+    type: "object",
+    properties: {
+      transactionId: {
+        type: "integer",
+        description: "Transaction ID",
+        errorMessage: {
+          type: "El ID de transacción debe ser un número entero.",
+        },
+      },
+    },
+  },
+  response: {
+    204: {
+      description: "La transacción se actualizó correctamente",
     },
   },
 };
