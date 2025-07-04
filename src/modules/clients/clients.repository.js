@@ -64,11 +64,23 @@ export async function fetchCountClients(fastify, accountId) {
   return rows[0].total;
 }
 
-export async function fetchClientById(fastify, id) {
-  const [rows] = await fastify.mysql.query(
-    "SELECT * FROM clients WHERE id = ? AND is_deleted = FALSE",
-    [id]
-  );
+export async function fetchClientById(fastify, id, withDeleted = false) {
+  let query = "SELECT * FROM clients";
+  const conditions = [];
+  const params = [];
+
+  if (!withDeleted) {
+    conditions.push("is_deleted = FALSE");
+  }
+
+  conditions.push("id = ?");
+  params.push(id);
+
+  if (conditions.length > 0) {
+    query += " WHERE " + conditions.join(" AND ");
+  }
+
+  const [rows] = await fastify.mysql.execute(query, params);
 
   const data = normalizeRow(rows[0]);
   return data;

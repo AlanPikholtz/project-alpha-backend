@@ -238,7 +238,11 @@ export async function assignTransactions(fastify, transactionIds, clientId) {
 
   for (const transaction of transactions) {
     if (transaction.clientId) {
-      const oldClient = await fetchClientById(fastify, transaction.clientId);
+      const oldClient = await fetchClientById(
+        fastify,
+        transaction.clientId,
+        true
+      );
 
       if (!oldClient) {
         throw {
@@ -313,7 +317,7 @@ export async function unassignTransaction(fastify, transactionId) {
       message: `La transacción ${transactionId} no está asignada a ningún cliente.`,
     };
 
-  const client = await fetchClientById(fastify, transaction.clientId);
+  const client = await fetchClientById(fastify, transaction.clientId, true);
 
   if (!client)
     throw {
