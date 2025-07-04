@@ -123,3 +123,20 @@ export const createPaymentSchema = {
     },
   },
 };
+
+export const deletePaymentSchema = {
+  description: "Delete a payment",
+  tags: ["Payments"],
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "integer", minimum: 1, description: "Payment ID" },
+    },
+  },
+  response: {
+    204: {
+      description: "El pago se eliminó correctamente",
+    },
+  },
+};

@@ -177,6 +177,8 @@ export async function fetchClientOperations(
   paymentsConditions.push("client_id = ?");
   paymentsParams.push(clientId);
 
+  paymentsConditions.push("is_deleted = FALSE");
+
   if (from) {
     paymentsConditions.push("payment_request_date >= ?");
     paymentsParams.push(from);
@@ -257,6 +259,8 @@ export async function fetchCountOperations(fastify, clientId, from, to) {
 
   paymentsConditions.push("client_id = ?");
   paymentsParams.push(clientId);
+
+  paymentsConditions.push("is_deleted = FALSE");
 
   if (from) {
     paymentsConditions.push("payment_request_date >= ?");
