@@ -175,7 +175,7 @@ export async function fetchClientOperations(
 
   if (type === "payments" || type === "all") {
     let paymentsQuery = `
-    SELECT payment_request_date as date, amount, currency
+    SELECT payment_request_date as date, amount, currency, method
     FROM payments`;
 
     const paymentsConditions = [];
@@ -209,6 +209,7 @@ export async function fetchClientOperations(
     );
 
     const normalizedPayments = paymentsRows.map((row) => normalizeRow(row));
+
     payments = normalizedPayments.map((payment) => ({
       ...payment,
       type: "payment",
