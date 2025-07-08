@@ -11,10 +11,10 @@ import {
 import Decimal from "decimal.js";
 import { DateTime } from "luxon";
 
-export async function getAllPayments(fastify, limit, offset, page) {
-  const payments = await fetchPayments(fastify, limit, offset);
+export async function getAllPayments(fastify, limit, offset, page, amount) {
+  const payments = await fetchPayments(fastify, limit, offset, amount);
 
-  const totalPayments = await fetchCountPayments(fastify);
+  const totalPayments = await fetchCountPayments(fastify, amount);
   const totalPages = !limit ? 1 : Math.ceil(totalPayments / limit);
 
   return {
