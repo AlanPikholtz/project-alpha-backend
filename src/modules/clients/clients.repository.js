@@ -133,7 +133,7 @@ export async function fetchClientOperations(
   let transactions = [];
   let payments = [];
 
-  if (type === "deposits" || type === "all") {
+  if (type === "transactions" || type === "all") {
     let query = `
     SELECT date, type, amount, commission_amount, currency, assigned_at
     FROM transactions`;
@@ -240,7 +240,7 @@ export async function fetchClientOperations(
 export async function fetchCountOperations(fastify, clientId, from, to, type) {
   let transactionsCount = 0;
   let paymentsCount = 0;
-  if (type === "deposits" || type === "all") {
+  if (type === "transactions" || type === "all") {
     let query = "SELECT COUNT(*) as total FROM transactions";
     const conditions = [];
     const params = [];

@@ -422,11 +422,11 @@ export const getClientOperationsSchema = {
       },
       type: {
         type: "string",
-        enum: ["deposits", "payments", "all"],
+        enum: ["transactions", "payments", "all"],
         description: "Operations type",
         errorMessage: {
           type: "Operations type must be a string.",
-          enum: "Operations type must be [deposits] | [payments] | [all].",
+          enum: "Operations type must be [transactions] | [payments] | [all].",
         },
       },
     },
