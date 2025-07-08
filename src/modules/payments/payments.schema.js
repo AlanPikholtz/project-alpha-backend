@@ -14,6 +14,15 @@ export const getAllPaymentsSchema = {
         minimum: 0,
         description: "Number of page",
       },
+      amount: {
+        type: "number",
+        minimum: 0.01,
+        description: "Payment amount",
+        errorMessage: {
+          type: "Payment amount must be a number.",
+          minimum: "Payment amount must be >= 0.01.",
+        },
+      },
     },
   },
   response: {
