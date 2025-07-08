@@ -420,6 +420,15 @@ export const getClientOperationsSchema = {
           enum: "Sort order must be [asc] | [desc].",
         },
       },
+      type: {
+        type: "string",
+        enum: ["deposits", "payments", "all"],
+        description: "Operations type",
+        errorMessage: {
+          type: "Operations type must be a string.",
+          enum: "Operations type must be [deposits] | [payments] | [all].",
+        },
+      },
     },
   },
   response: {

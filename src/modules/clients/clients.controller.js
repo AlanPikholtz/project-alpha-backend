@@ -145,6 +145,7 @@ export async function getClientOperationsHandler(req, reply) {
       to,
       sort = "assignedAt",
       order = "desc",
+      type = "all",
     } = req.query;
     const offset = (page - 1) * limit;
 
@@ -181,7 +182,8 @@ export async function getClientOperationsHandler(req, reply) {
       to,
       sort,
       order,
-      page
+      page,
+      type
     );
 
     console.timeEnd(`⏱️ GET /client/${id}/operations execution time`);
