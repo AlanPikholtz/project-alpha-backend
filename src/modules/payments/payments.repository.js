@@ -57,7 +57,7 @@ export async function fetchPayments(fastify, limit, offset, amount) {
     query += "WHERE " + conditions.join(" AND ");
   }
 
-  query += " ORDER BY p.payment_request_date DESC";
+  query += " ORDER BY payment_request_date DESC";
 
   if (limit !== null) {
     query += ` LIMIT ${limit} OFFSET ${offset}`;
