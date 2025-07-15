@@ -54,15 +54,16 @@ export async function fetchPayments(fastify, limit, offset, amount) {
   }
 
   if (conditions.length > 0) {
-    query += "WHERE " + conditions.join(" AND ");
+    query += " WHERE " + conditions.join(" AND ");
   }
 
-  query += " ORDER BY payment_request_date DESC";
+  query += " ORDER BY p.payment_request_date DESC";
 
   if (limit !== null) {
     query += ` LIMIT ${limit} OFFSET ${offset}`;
   }
 
+  console.log("Executing query:", query, params);
   const [rows] = await fastify.mysql.query(query, params);
 
   const data = rows.map((row) => normalizeRow(row));
