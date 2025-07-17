@@ -307,11 +307,3 @@ export async function deleteClient(fastify, clientId) {
   );
   return result.affectedRows > 0;
 }
-
-export async function deleteClient(fastify, clientId) {
-  const [result] = await fastify.mysql.execute(
-    "UPDATE clients SET is_deleted = TRUE, deleted_at = NOW() WHERE id = ?",
-    [clientId]
-  );
-  return result.affectedRows > 0;
-}
