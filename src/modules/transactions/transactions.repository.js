@@ -72,7 +72,7 @@ export async function fetchTransactions(
   let query = `
     SELECT 
       t.*, 
-      CONCAT(c.first_name, ' ', c.last_name) AS clientFullName
+      CONCAT_WS(' ', c.first_name, c.last_name) AS clientFullName
     FROM transactions t
     LEFT JOIN clients c ON t.client_id = c.id`;
   const conditions = [];

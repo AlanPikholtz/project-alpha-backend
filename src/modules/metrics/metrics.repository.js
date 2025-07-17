@@ -28,7 +28,7 @@ export async function fetchMetrics(fastify, start, end) {
       `
       SELECT 
         c.id AS clientId,
-        CONCAT(c.first_name, ' ', c.last_name) AS clientFullName,
+        CONCAT_WS(' ', c.first_name, c.last_name) AS clientFullName,
         SUM(t.amount) AS totalDeposits
       FROM transactions t
       JOIN clients c ON t.client_id = c.id
@@ -46,7 +46,7 @@ export async function fetchMetrics(fastify, start, end) {
       `
       SELECT 
         c.id AS clientId,
-        CONCAT(c.first_name, ' ', c.last_name) AS clientFullName,
+        CONCAT_WS(' ', c.first_name, c.last_name) AS clientFullName,
         SUM(t.commission_amount) AS totalCommissions
       FROM transactions t
       JOIN clients c ON t.client_id = c.id

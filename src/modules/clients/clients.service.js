@@ -205,7 +205,8 @@ export async function getClientOperations(
   to,
   sort,
   order,
-  page
+  page,
+  type
 ) {
   const client = await fetchClientById(fastify, clientId);
   if (!client)
@@ -224,7 +225,8 @@ export async function getClientOperations(
     from,
     to,
     sort,
-    order
+    order,
+    type
   );
 
   const mappedOperations = operations.map((operation) => ({
@@ -246,7 +248,8 @@ export async function getClientOperations(
     fastify,
     clientId,
     from,
-    to
+    to,
+    type
   );
   const totalPages = !limit ? 1 : Math.ceil(totalOperations / limit);
 

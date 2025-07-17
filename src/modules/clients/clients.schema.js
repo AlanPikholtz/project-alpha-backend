@@ -420,6 +420,15 @@ export const getClientOperationsSchema = {
           enum: "Sort order must be [asc] | [desc].",
         },
       },
+      type: {
+        type: "string",
+        enum: ["transactions", "payments", "all"],
+        description: "Operations type",
+        errorMessage: {
+          type: "Operations type must be a string.",
+          enum: "Operations type must be [transactions] | [payments] | [all].",
+        },
+      },
     },
   },
   response: {
@@ -436,6 +445,7 @@ export const getClientOperationsSchema = {
               type: { type: "string" },
               amount: { type: "string" },
               currency: { type: "string" },
+              method: { type: ["string", "null"] },
               clientAmount: { type: ["string", "null"] },
               assignedAt: { type: "string", format: "date-time" },
             },
