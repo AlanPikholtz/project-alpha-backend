@@ -1,8 +1,12 @@
-import { createPayment, getAllPayments } from "./payments.service.js";
+import {
+  createPayment,
+  deletePayment,
+  getAllPayments,
+} from "./payments.service.js";
 
 export async function getAllPaymentsHandler(req, reply) {
   try {
-    var { limit = 10, page = 1 } = req.query;
+    var { amount, limit = 10, page = 1 } = req.query;
     const offset = (page - 1) * limit;
 
     if (limit === 0) {
@@ -14,7 +18,7 @@ export async function getAllPaymentsHandler(req, reply) {
     );
 
     console.time("⏱️ GET /payments execution time");
-    const result = await getAllPayments(req.server, limit, offset, page);
+    const result = await getAllPayments(req.server, limit, offset, page, amount);
     console.timeEnd("⏱️ GET /payments execution time");
 
     req.log.info(`✅ Payments retrieved: ${result.total} records found`);
@@ -48,6 +52,23 @@ export async function createPaymentHandler(req, reply) {
     return reply.status(201).send(paymentId);
   } catch (error) {
     req.log.error(`❌ Error creating payment: ${error.message}`);
+    throw error;
+  }
+}
+
+export async function deletePaymentHandler(req, reply) {
+  try {
+    const { id } = req.params;
+
+    req.log.info(`📥 Deleting payment ${id}`);
+
+    await deletePayment(req.server, id);
+
+    req.log.info(`✅ Payment deleted successfully - Payment id: ${id}`);
+
+    return reply.status(204).send();
+  } catch (error) {
+    req.log.error(`❌ Error deleting payment: ${error.message}`);
     throw error;
   }
 }

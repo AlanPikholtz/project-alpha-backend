@@ -14,6 +14,15 @@ export const getAllPaymentsSchema = {
         minimum: 0,
         description: "Number of page",
       },
+      amount: {
+        type: "number",
+        minimum: 0.01,
+        description: "Payment amount",
+        errorMessage: {
+          type: "Payment amount must be a number.",
+          minimum: "Payment amount must be >= 0.01.",
+        },
+      },
     },
   },
   response: {
@@ -120,6 +129,23 @@ export const createPaymentSchema = {
       properties: {
         id: { type: "integer" },
       },
+    },
+  },
+};
+
+export const deletePaymentSchema = {
+  description: "Delete a payment",
+  tags: ["Payments"],
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "integer", minimum: 1, description: "Payment ID" },
+    },
+  },
+  response: {
+    204: {
+      description: "El pago se eliminó correctamente",
     },
   },
 };

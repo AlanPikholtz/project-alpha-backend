@@ -64,11 +64,23 @@ export async function fetchCountClients(fastify, accountId) {
   return rows[0].total;
 }
 
-export async function fetchClientById(fastify, id) {
-  const [rows] = await fastify.mysql.query(
-    "SELECT * FROM clients WHERE id = ? AND is_deleted = FALSE",
-    [id]
-  );
+export async function fetchClientById(fastify, id, withDeleted = false) {
+  let query = "SELECT * FROM clients";
+  const conditions = [];
+  const params = [];
+
+  if (!withDeleted) {
+    conditions.push("is_deleted = FALSE");
+  }
+
+  conditions.push("id = ?");
+  params.push(id);
+
+  if (conditions.length > 0) {
+    query += " WHERE " + conditions.join(" AND ");
+  }
+
+  const [rows] = await fastify.mysql.execute(query, params);
 
   const data = normalizeRow(rows[0]);
   return data;
@@ -115,87 +127,98 @@ export async function fetchClientOperations(
   from,
   to,
   sort,
-  order
+  order,
+  type
 ) {
-  let query = `
+  let transactions = [];
+  let payments = [];
+
+  if (type === "transactions" || type === "all") {
+    let query = `
     SELECT date, type, amount, commission_amount, currency, assigned_at
     FROM transactions`;
-  const conditions = [];
-  const params = [];
+    const conditions = [];
+    const params = [];
 
-  conditions.push("client_id = ?");
-  params.push(clientId);
+    conditions.push("client_id = ?");
+    params.push(clientId);
 
-  if (from) {
-    conditions.push("date >= ?");
-    params.push(from);
+    if (from) {
+      conditions.push("date >= ?");
+      params.push(from);
+    }
+    if (to) {
+      conditions.push("date <= ?");
+      params.push(to);
+    }
+
+    conditions.push("is_deleted = FALSE");
+
+    if (conditions.length > 0) {
+      query += " WHERE " + conditions.join(" AND ");
+    }
+
+    const validSortFields = {
+      date: "date",
+      assignedAt: "assigned_at",
+    };
+
+    const sortField = validSortFields[sort];
+    const sortOrder = order.toLowerCase() === "asc" ? "ASC" : "DESC";
+
+    query += ` ORDER BY ${sortField} ${sortOrder}`;
+
+    const [rows] = await fastify.mysql.query(query, params);
+
+    transactions = rows.map((row) => normalizeRow(row));
   }
-  if (to) {
-    conditions.push("date <= ?");
-    params.push(to);
-  }
 
-  conditions.push("is_deleted = FALSE");
-
-  if (conditions.length > 0) {
-    query += " WHERE " + conditions.join(" AND ");
-  }
-
-  const validSortFields = {
-    date: "date",
-    assignedAt: "assigned_at",
-  };
-
-  const sortField = validSortFields[sort];
-  const sortOrder = order.toLowerCase() === "asc" ? "ASC" : "DESC";
-
-  query += ` ORDER BY ${sortField} ${sortOrder}`;
-
-  const [rows] = await fastify.mysql.query(query, params);
-
-  const transactions = rows.map((row) => normalizeRow(row));
-
-  let paymentsQuery = `
-    SELECT payment_request_date as date, amount, currency
+  if (type === "payments" || type === "all") {
+    let paymentsQuery = `
+    SELECT payment_request_date as date, amount, currency, method
     FROM payments`;
 
-  const paymentsConditions = [];
-  const paymentsParams = [];
+    const paymentsConditions = [];
+    const paymentsParams = [];
 
-  paymentsConditions.push("client_id = ?");
-  paymentsParams.push(clientId);
+    paymentsConditions.push("client_id = ?");
+    paymentsParams.push(clientId);
 
-  if (from) {
-    paymentsConditions.push("payment_request_date >= ?");
-    paymentsParams.push(from);
+    paymentsConditions.push("is_deleted = FALSE");
+
+    if (from) {
+      paymentsConditions.push("payment_request_date >= ?");
+      paymentsParams.push(from);
+    }
+    if (to) {
+      paymentsConditions.push("payment_request_date <= ?");
+      paymentsParams.push(to);
+    }
+
+    if (paymentsConditions.length > 0) {
+      paymentsQuery += " WHERE " + paymentsConditions.join(" AND ");
+    }
+
+    const paymentsSortOrder = order.toLowerCase() === "asc" ? "ASC" : "DESC";
+
+    paymentsQuery += ` ORDER BY payment_request_date ${paymentsSortOrder}`;
+
+    const [paymentsRows] = await fastify.mysql.query(
+      paymentsQuery,
+      paymentsParams
+    );
+
+    const normalizedPayments = paymentsRows.map((row) => normalizeRow(row));
+
+    payments = normalizedPayments.map((payment) => ({
+      ...payment,
+      type: "payment",
+      assignedAt: payment.date,
+      commissionAmount: null,
+    }));
   }
-  if (to) {
-    paymentsConditions.push("payment_request_date <= ?");
-    paymentsParams.push(to);
-  }
 
-  if (paymentsConditions.length > 0) {
-    paymentsQuery += " WHERE " + paymentsConditions.join(" AND ");
-  }
-
-  const paymentsSortOrder = order.toLowerCase() === "asc" ? "ASC" : "DESC";
-
-  paymentsQuery += ` ORDER BY payment_request_date ${paymentsSortOrder}`;
-
-  const [paymentsRows] = await fastify.mysql.query(
-    paymentsQuery,
-    paymentsParams
-  );
-
-  const payments = paymentsRows.map((row) => normalizeRow(row));
-  const normalizedPayments = payments.map((payment) => ({
-    ...payment,
-    type: "payment",
-    assignedAt: payment.date,
-    commissionAmount: null,
-  }));
-
-  const combined = [...transactions, ...normalizedPayments];
+  const combined = [...transactions, ...payments];
 
   if (sort === "date") {
     if (order === "asc") {
@@ -214,59 +237,75 @@ export async function fetchClientOperations(
   return combined;
 }
 
-export async function fetchCountOperations(fastify, clientId, from, to) {
-  let query = "SELECT COUNT(*) as total FROM transactions";
-  const conditions = [];
-  const params = [];
+export async function fetchCountOperations(fastify, clientId, from, to, type) {
+  let transactionsCount = 0;
+  let paymentsCount = 0;
+  if (type === "transactions" || type === "all") {
+    let query = "SELECT COUNT(*) as total FROM transactions";
+    const conditions = [];
+    const params = [];
 
-  conditions.push("client_id = ?");
-  params.push(clientId);
+    conditions.push("client_id = ?");
+    params.push(clientId);
 
-  if (from) {
-    conditions.push("date >= ?");
-    params.push(from);
-  }
-  if (to) {
-    conditions.push("date <= ?");
-    params.push(to);
-  }
+    if (from) {
+      conditions.push("date >= ?");
+      params.push(from);
+    }
+    if (to) {
+      conditions.push("date <= ?");
+      params.push(to);
+    }
 
-  if (conditions.length > 0) {
-    query += " WHERE " + conditions.join(" AND ");
-  }
+    if (conditions.length > 0) {
+      query += " WHERE " + conditions.join(" AND ");
+    }
 
-  const [rows] = await fastify.mysql.execute(query, params);
+    const [rows] = await fastify.mysql.execute(query, params);
 
-  const totalTransactions = rows[0].total;
-
-  let paymentsQuery = "SELECT COUNT(*) as total FROM payments";
-  const paymentsConditions = [];
-  const paymentsParams = [];
-
-  paymentsConditions.push("client_id = ?");
-  paymentsParams.push(clientId);
-
-  if (from) {
-    paymentsConditions.push("payment_request_date >= ?");
-    paymentsParams.push(from);
-  }
-  if (to) {
-    paymentsConditions.push("payment_request_date <= ?");
-    paymentsParams.push(to);
+    transactionsCount = rows[0].total;
   }
 
-  if (paymentsConditions.length > 0) {
-    paymentsQuery += " WHERE " + paymentsConditions.join(" AND ");
+  if (type === "payments" || type === "all") {
+    let paymentsQuery = "SELECT COUNT(*) as total FROM payments";
+    const paymentsConditions = [];
+    const paymentsParams = [];
+
+    paymentsConditions.push("client_id = ?");
+    paymentsParams.push(clientId);
+
+    paymentsConditions.push("is_deleted = FALSE");
+
+    if (from) {
+      paymentsConditions.push("payment_request_date >= ?");
+      paymentsParams.push(from);
+    }
+    if (to) {
+      paymentsConditions.push("payment_request_date <= ?");
+      paymentsParams.push(to);
+    }
+
+    if (paymentsConditions.length > 0) {
+      paymentsQuery += " WHERE " + paymentsConditions.join(" AND ");
+    }
+
+    const [paymentsRows] = await fastify.mysql.execute(
+      paymentsQuery,
+      paymentsParams
+    );
+
+    paymentsCount = paymentsRows[0].total;
   }
 
-  const [paymentsRows] = await fastify.mysql.execute(
-    paymentsQuery,
-    paymentsParams
+  return transactionsCount + paymentsCount;
+}
+
+export async function deleteClient(fastify, clientId) {
+  const [result] = await fastify.mysql.execute(
+    "UPDATE clients SET is_deleted = TRUE, deleted_at = NOW() WHERE id = ?",
+    [clientId]
   );
-
-  const totalPayments = paymentsRows[0].total;
-
-  return totalTransactions + totalPayments;
+  return result.affectedRows > 0;
 }
 
 export async function deleteClient(fastify, clientId) {
