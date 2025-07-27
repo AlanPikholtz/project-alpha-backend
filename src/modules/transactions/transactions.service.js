@@ -165,6 +165,7 @@ export async function getTransactions(
   const totalTransactions = await fetchCountTransactions(
     fastify,
     status,
+    accountId,
     clientId,
     amount,
     from,

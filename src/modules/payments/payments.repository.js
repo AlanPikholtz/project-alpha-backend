@@ -63,7 +63,6 @@ export async function fetchPayments(fastify, limit, offset, amount) {
     query += ` LIMIT ${limit} OFFSET ${offset}`;
   }
 
-  console.log("Executing query:", query, params);
   const [rows] = await fastify.mysql.query(query, params);
 
   const data = rows.map((row) => normalizeRow(row));
