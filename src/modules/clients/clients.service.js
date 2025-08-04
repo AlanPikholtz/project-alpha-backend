@@ -229,11 +229,12 @@ export async function getClientOperations(
     type
   );
 
-  const mappedOperations = operations.map((operation) => ({
+  const mappedOperations = operations.map((operation, index) => ({
     ...operation,
     clientAmount: operation.commissionAmount
       ? operation.amount.minus(operation.commissionAmount)
       : null,
+    id: index,
   }));
 
   var paginatedOperations;
