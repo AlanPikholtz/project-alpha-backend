@@ -441,6 +441,7 @@ export const getClientOperationsSchema = {
           items: {
             type: "object",
             properties: {
+              id: { type: "integer" },
               date: { type: "string", format: "date-time" },
               type: { type: "string" },
               amount: { type: "string" },
