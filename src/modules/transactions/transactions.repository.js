@@ -149,6 +149,7 @@ export async function fetchTransactionsByAmountAndDate(fastify, transactions) {
 export async function fetchCountTransactions(
   fastify,
   status,
+  accountId,
   clientId,
   amount,
   from,
@@ -157,6 +158,11 @@ export async function fetchCountTransactions(
   let query = "SELECT COUNT(*) as total FROM transactions";
   const conditions = [];
   const params = [];
+
+  if (accountId) {
+    conditions.push("account_id = ?");
+    params.push(accountId);
+  }
 
   if (clientId) {
     conditions.push("client_id = ?");
