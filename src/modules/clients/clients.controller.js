@@ -24,7 +24,6 @@ export async function getAllClientsHandler(req, reply) {
       `📥 Request received: GET /clients?limit=${limit}&page=${page}&accountId=${accountId}`
     );
 
-    console.time("⏱️ GET /clients execution time");
     const clients = await getAllClients(
       req.server,
       limit,
@@ -32,7 +31,6 @@ export async function getAllClientsHandler(req, reply) {
       page,
       accountId
     );
-    console.timeEnd("⏱️ GET /clients execution time");
 
     req.log.info(`✅ Clients retrieved: ${clients.length} records found`);
 
@@ -171,8 +169,6 @@ export async function getClientOperationsHandler(req, reply) {
       `📥 Request received: GET /client/${id}/operations?limit=${limit}&page=${page}&from=${from}&to=${to}&sort=${sort}&order=${order}`
     );
 
-    console.time(`⏱️ GET /client/${id}/operations execution time`);
-
     const operations = await getClientOperations(
       req.server,
       id,
@@ -185,8 +181,6 @@ export async function getClientOperationsHandler(req, reply) {
       page,
       type
     );
-
-    console.timeEnd(`⏱️ GET /client/${id}/operations execution time`);
 
     req.log.info(`✅ Operations retrieved: ${operations.length} records found`);
     const normalizedOperations = normalizeResponse(operations);

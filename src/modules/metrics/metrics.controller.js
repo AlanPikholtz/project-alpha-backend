@@ -6,9 +6,7 @@ export async function getMetricsHandler(req, reply) {
 
     req.log.info(`📥 Request received: GET /metrics`);
 
-    console.time("⏱️ GET /metrics execution time");
     const metrics = await getMetrics(req.server, date);
-    console.timeEnd("⏱️ GET /metrics execution time");
 
     req.log.info("✅ Metrics retrieved successfuly");
 
