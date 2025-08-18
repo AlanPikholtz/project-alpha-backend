@@ -17,9 +17,13 @@ export async function getAllPaymentsHandler(req, reply) {
       `📥 Request received: GET /payments?limit=${limit}&page=${page}`
     );
 
-    console.time("⏱️ GET /payments execution time");
-    const result = await getAllPayments(req.server, limit, offset, page, amount);
-    console.timeEnd("⏱️ GET /payments execution time");
+    const result = await getAllPayments(
+      req.server,
+      limit,
+      offset,
+      page,
+      amount
+    );
 
     req.log.info(`✅ Payments retrieved: ${result.total} records found`);
 

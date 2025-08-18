@@ -19,9 +19,7 @@ export async function getAllAccountsHandler(req, reply) {
       `📥 Request received: GET /accounts?limit=${limit}&page=${page}`
     );
 
-    console.time("⏱️ GET /accounts execution time");
     const result = await getAllAccounts(req.server, limit, offset, page);
-    console.timeEnd("⏱️ GET /accounts execution time");
 
     req.log.info(`✅ Accounts retrieved: ${result.total} records found`);
 
