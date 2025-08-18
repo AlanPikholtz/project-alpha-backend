@@ -95,7 +95,6 @@ export async function getTransactionsHandler(req, reply) {
       `📥 Request received: GET /transactions?status=${status}&clientId=${clientId}&accountId=${accountId}&limit=${limit}&page=${page}&amount=${amount}&from=${from}&to=${to}&sort=${sort}&order=${order}`
     );
 
-    console.time("⏱️ GET /transactions execution time");
     const transactions = await getTransactions(
       req.server,
       status,
@@ -110,7 +109,6 @@ export async function getTransactionsHandler(req, reply) {
       sort,
       order
     );
-    console.timeEnd("⏱️ GET /transactions execution time");
 
     req.log.info(
       `✅ Transactions retrieved: ${transactions.length} records found`
