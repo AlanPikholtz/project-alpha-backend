@@ -1,0 +1,51 @@
+# =========================================
+# 📁 ARCHIVOS Y DIRECTORIOS IGNORADOS
+# =========================================
+
+# Directorios de build
+dist/
+build/
+coverage/
+
+# Node modules
+node_modules/
+
+# Archivos de configuración sensibles
+.env*
+!.env.example
+
+# Archivos de log
+*.log
+logs/
+
+# Archivos temporales
+.tmp/
+.cache/
+
+# Archivos de base de datos
+*.db
+*.sqlite
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# =========================================
+# 📋 ARCHIVOS ESPECÍFICOS A IGNORAR
+# =========================================
+
+# Package lock files (formato automático)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Archivos compilados de TypeScript
+*.tsbuildinfo
+
+# =========================================
+# 📝 DOCUMENTACIÓN AUTOMÁTICA
+# =========================================
+
+# Swagger/OpenAPI generado automáticamente
+**/swagger.json
+**/openapi.json

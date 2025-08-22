@@ -4,10 +4,18 @@
   "description": "API con Fastify, MySQL y JWT, lista para deploy en Railway",
   "type": "module",
   "scripts": {
-    "dev": "NODE_ENV=development node src/server.js",
-    "start": "NODE_ENV=production node src/server.js",
-    "lint": "eslint . --ext .js",
-    "format": "prettier --write ."
+    "dev": "NODE_ENV=development nodemon --exec tsx src/server.ts",
+    "start": "NODE_ENV=production node dist/server.js",
+    "build": "npm run type-check && tsc",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "type-check": "tsc --noEmit",
+    "check-all": "npm run type-check && npm run lint && npm run format:check",
+    "fix-all": "npm run type-check && npm run lint:fix && npm run format",
+    "clean": "rm -rf dist",
+    "rebuild": "npm run clean && npm run build"
   },
   "dependencies": {
     "@fastify/cors": "^11.0.0",
@@ -18,6 +26,8 @@
     "@fastify/rate-limit": "^10.2.2",
     "@fastify/swagger": "^9.4.2",
     "@fastify/swagger-ui": "^5.2.2",
+    "@fastify/type-provider-typebox": "^5.2.0",
+    "@sinclair/typebox": "^0.34.40",
     "ajv-errors": "^3.0.0",
     "bcrypt": "^5.1.0",
     "decimal.js": "^10.5.0",
@@ -26,10 +36,20 @@
     "luxon": "^3.6.1"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/luxon": "^3.4.2",
+    "@types/node": "^20.11.0",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
     "eslint": "^8.55.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
     "nodemon": "^3.0.0",
     "pino-pretty": "^13.0.0",
-    "prettier": "^3.0.0"
+    "prettier": "^3.0.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.4",
+    "typescript": "^5.3.3"
   },
   "engines": {
     "node": ">=18.0.0"

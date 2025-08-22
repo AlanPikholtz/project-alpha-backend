@@ -1,0 +1,78 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint"],
+  "extends": ["eslint:recommended"],
+  "env": {
+    "node": true,
+    "es2022": true
+  },
+  "rules": {
+    // =========================================
+    // 🚀 REGLAS BÁSICAS DE TYPESCRIPT
+    // =========================================
+
+    // ❌ Prohibir any explícito (básico)
+    "@typescript-eslint/no-explicit-any": "warn",
+
+    // ⚠️ Variables no utilizadas
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ],
+
+    // ✅ Preferir const
+    "prefer-const": "error",
+
+    // ✅ No permitir var
+    "no-var": "error",
+
+    // ✅ Usar template literals
+    "prefer-template": "error",
+
+    // =========================================
+    // 🛡️ REGLAS DE SEGURIDAD BÁSICAS
+    // =========================================
+
+    // ❌ No usar eval
+    "no-eval": "error",
+
+    // ⚠️ Console warnings (no error)
+    "no-console": "warn",
+
+    // ❌ No usar debugger
+    "no-debugger": "error",
+
+    // =========================================
+    // 🚫 REGLAS DESHABILITADAS
+    // =========================================
+
+    // Deshabilitamos reglas de JS que TS ya maneja
+    "no-undef": "off",
+    "no-redeclare": "off"
+  },
+
+  "overrides": [
+    {
+      "files": ["**/*.schema.ts", "**/schemas.ts"],
+      "rules": {
+        "max-lines": "off"
+      }
+    },
+    {
+      "files": ["**/*.test.ts", "**/*.spec.ts"],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off"
+      }
+    }
+  ],
+
+  "ignorePatterns": ["dist/", "node_modules/", "*.js", "coverage/"]
+}
